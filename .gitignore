@@ -1,0 +1,32 @@
+# Model weights — distributed as GitHub Release assets, never committed.
+# A .pt file cannot be removed from git history once pushed.
+*.pt
+*.pth
+results/weights/
+
+# Dataset — downloaded at runtime from Roboflow, never committed.
+dataset/
+*.zip
+
+# Credentials — nothing resembling a key goes in this repository.
+.env
+*.key
+roboflow_config.json
+
+# Ultralytics run directories
+runs/
+
+# Python
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+venv/
+.venv/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Superseded by DO_THIS_NEXT.md - safe to delete locally
+SETUP.md

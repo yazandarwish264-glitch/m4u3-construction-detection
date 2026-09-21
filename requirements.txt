@@ -1,0 +1,18 @@
+# Runtime dependencies for both notebooks.
+#
+# Colab already provides Python, torch, opencv, matplotlib, numpy and pyyaml.
+# Only the two packages below are installed by the notebooks.
+#
+# IMPORTANT — pin ultralytics after your first run.
+# Notebook 01 prints the installed version. Replace the line below with that
+# exact version, commit it, and record it in the README reproducibility
+# checklist. An unpinned dependency means the next person to run this gets a
+# different model, which is the most common way a "reproducible" repo stops
+# being reproducible.
+
+ultralytics            # -> pin to the version notebook 01 prints, e.g. ultralytics==8.4.157
+roboflow
+
+# The complete environment of the reported run is captured verbatim in
+# results/pip_freeze.txt by notebook 01. That file, not this one, is the
+# authoritative record of what produced the reported metrics.

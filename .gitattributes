@@ -1,0 +1,9 @@
+# Keep binaries and notebooks byte-identical across platforms.
+* text=auto
+*.pdf binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.pt  binary
+*.zip binary
+*.ipynb -text
