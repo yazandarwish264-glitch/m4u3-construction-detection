@@ -69,22 +69,26 @@ RUN = {
 }
 
 TAKEAWAYS = [
-    "Against success criterion S1 (mAP@50 >= 0.50) the run scored ____. "
-    "Replace this with one sentence on what that means for the triage use case.",
-    "____ performs best and ____ worst. The gap is explained by ____ "
-    "(instance count, object scale, or annotation consistency).",
-    "The dominant error mode is ____. It matters because ____.",
+    "<b>All three success criteria were met, and that is the least interesting result.</b> "
+    "mAP@50 reached 0.943 against a 0.50 target. Clearing a bar that far is itself a signal "
+    "that the measurement is wrong, not that the model is excellent.",
+    "<b>The split leaks.</b> Consecutively numbered frames sit on both sides of it "
+    "(steelBar_5397k in train, 5398k in validation); mAP@50 was already 0.677 after one epoch; "
+    "two classes reach recall 1.000. The headline number is not a generalisation estimate.",
+    "<b>steelbar is weakest in both architectures tried</b> \u2014 0.781 here, 0.539 in an independent "
+    "YOLOv11n cross-check \u2014 despite having the most training instances. Shape and our group-boxing "
+    "rule explain it; instance count does not. Per-class ranking survives the leak; absolute values do not.",
 ]
 
 LIMITATIONS = [
+    "The reported metrics are inflated by train/validation leakage from near-duplicate frames. "
+    "They measure memorisation as much as detection. Re-splitting by group is improvement D1.",
     "No safety function. The model detects no people, no PPE and no hazards. "
     "Treating it as a safety system would reduce site safety, not improve it.",
     "Presence only. It cannot measure quantity, spacing, cover or conformance, "
     "and its detection counts must never enter a payment application.",
     "Validated scope is daytime site photography at working range. Night, dust, "
     "rain, drone and enclosed-space imagery are untested.",
-    "Outputs are uncalibrated. A 0.9 confidence is not a 90 percent probability, "
-    "and no detection is contractual evidence.",
     "Human in the loop is mandatory. Every output is a prompt to look, not a decision.",
 ]
 

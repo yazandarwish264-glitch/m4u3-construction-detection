@@ -145,28 +145,60 @@ The dataset is **not** committed to this repository. The training notebook downl
 
 | Metric | Value |
 |---|---|
-| Precision | `__` |
-| Recall | `__` |
-| mAP@50 | `__` |
-| mAP@50–95 | `__` |
+| Precision | **0.950** |
+| Recall | **0.884** |
+| mAP@50 | **0.943** |
+| mAP@50–95 | **0.809** |
+
+> **Read §4.1 before quoting these numbers.** They are inflated by near-duplicate leakage between the train and validation splits. They are reported as measured, with the defect documented, rather than quietly presented as a generalisation estimate.
 
 ### Per class
 
-| Class | Images | Instances | P | R | mAP@50 | mAP@50–95 |
+| Class | Val images | Train instances | P | R | mAP@50 | mAP@50–95 |
 |---|---|---|---|---|---|---|
-| brick | `__` | `__` | `__` | `__` | `__` | `__` |
-| excavator | `__` | `__` | `__` | `__` | `__` | `__` |
-| pvcpipe | `__` | `__` | `__` | `__` | `__` | `__` |
-| scaffold | `__` | `__` | `__` | `__` | `__` | `__` |
-| steelbar | `__` | `__` | `__` | `__` | `__` | `__` |
+| `brick` | 140 | 109 | 0.984 | 1.000 | 0.995 | 0.932 |
+| `excavator` | 140 | 207 | 0.969 | 1.000 | 0.995 | 0.883 |
+| `pvcpipe` | 140 | 129 | 0.986 | 0.930 | 0.964 | 0.835 |
+| `scaffold` | 140 | 157 | 0.955 | 0.875 | 0.979 | 0.858 |
+| `steelbar` | 140 | 226 | 0.855 | 0.612 | 0.781 | 0.535 |
+
+### 4.1 The headline number is inflated — here is the evidence
+
+Three independent signals say the train/validation split leaks:
+
+**1. Consecutive frames are split across train and validation.** The source images are sequentially numbered, and neighbouring numbers — the same scene seconds apart — land on opposite sides of the split:
+
+| Image | Split |
+|---|---|
+| `steelBar_5397k.jpg` | train |
+| `steelBar_5398k.jpg` | **valid** |
+| `scaffold_9753j.jpeg` | **valid** |
+| `scaffold_9754j.jpeg` | train |
+| `scaffold_9755j.jpeg` | train |
+
+**2. mAP@50 was 0.677 after a single epoch.** A 5-class detector that has seen the training set once should be near zero on genuinely held-out data. It was already two-thirds of the way to its final score.
+
+| epoch | 1 | 5 | 10 | 20 | 30 |
+|---|---|---|---|---|---|
+| mAP@50 | **0.677** | 0.590 | 0.875 | 0.941 | 0.941 |
+
+**3. Two classes reach recall 1.000.** `brick` and `excavator` miss nothing at all, on a 560-image training set with no augmentation.
+
+**Cause.** Roboflow's split is random over images. When a dataset is built from video frames or photo bursts, random splitting puts near-identical images on both sides. Our re-split from 70/20/10 to 80/20 inherited this — we moved the test images into training and left validation untouched, which preserved the original split's leakage rather than introducing it.
+
+**What the numbers still support.** Per-class *ranking* is still informative, because every class is equally advantaged: `steelbar` is the weakest class at 0.781 despite having the most training instances, and it was also weakest in an independent YOLOv11n cross-check at 0.539. Two architectures agreeing on that ordering is a real finding.
+
+**What they do not support.** Any claim about performance on unseen sites. The five images in `data/new_images/` are the only honest generalisation evidence in this project, and they should be weighted accordingly.
+
+**The fix**, and the first entry in our iteration plan: re-split by **group** rather than at random — cluster images by filename prefix and sequence number so that consecutive frames stay on the same side — then retrain and report both numbers side by side.
 
 ### Key takeaways
 
-> Replace with three observations once the run completes. Each one should name a class, a number, and a consequence. Template:
+1. **Every success criterion was met, and that is the least interesting thing here.** S1 wanted mAP@50 ≥ 0.50 and got 0.943; S2 wanted `steelbar` recall ≥ 0.50 and got 0.612; S3 wanted `brick` recall ≥ 0.40 and got 1.000. Clearing a bar by that margin is itself evidence something is wrong with the measurement, which is what §4.1 documents.
 
-1. **Against success criteria:** S1 was `met / not met` at mAP@50 = `__` against a target of 0.50. `One sentence on what that means for the triage use case.`
-2. **Strongest and weakest class:** `Class X` performs best (mAP@50 `__`), `Class Y` worst (`__`). The gap is explained by `instance count / object scale / annotation consistency`.
-3. **Dominant error mode:** `Most errors are false negatives on small, occluded instances / most errors are false positives confusing class A with class B`. This matters because `consequence for the progress-reporting use case`.
+2. **`steelbar` is the weakest class in both architectures we tried.** 0.781 here, 0.539 in the YOLOv11n cross-check — worst of the five in each, despite having the *most* training instances (226). Instance count does not explain it; object shape and our group-boxing rule do. Its recall (0.612) is the lowest of any class by a wide margin, meaning the model is missing reinforcement steel that is genuinely in frame.
+
+3. **The dominant error is missing things, not mislabelling them.** Overall precision (0.950) sits well above recall (0.884). For the progress-logging use case that is the wrong way round — a missed detection produces no record and nobody investigates, which is the silent failure the governance note identifies as the costly one.
 
 Curves and confusion matrix: [`results/curves/`](results/curves/) · Prediction examples: [`results/evidence/`](results/evidence/) · Full error analysis: [`docs/error_analysis.md`](docs/error_analysis.md)
 
@@ -227,33 +259,36 @@ VERIFICATION_RUN = False       # set True for the 5-epoch no-GPU fallback — se
 
 ## 6. Reproducibility proof
 
-> **STATUS: to be completed after the first successful end-to-end run.** Fill every field. This section is worth marks on its own.
-
 | Field | Value |
 |---|---|
-| Date and time of last successful full run | `____-__-__ __:__ (UTC+3)` |
-| Run mode | `Full 30-epoch run` / `5-epoch verification run + released weights` |
-| Accelerator reported by the notebook | `Tesla T4` / `____` |
-| Colab tier | `Free` / `Pro` |
-| Wall-clock training time | `__ min` |
-| Wall-clock total, restart-to-finish | `__ min` |
-| Expected runtime range for a third party | `25–45 min on a free-tier T4` |
+| Date and time of last successful full run | **2026-09-21T20:40:39Z** |
+| Run mode | **Full 30-epoch run** (not the verification fallback) |
+| Accelerator | **Tesla T4, 15360 MiB** |
+| Colab tier | Free |
+| Wall-clock training time | **6.4 min** |
+| Expected runtime range for a third party | 6–15 min on a free-tier T4 |
+| ultralytics | **8.4.157** |
+| torch | **2.11.0+cu128** |
+| Python | 3.13.15 |
+| Weights SHA-256 | `1c6bed773b68ac17bd1491d86431dd30178b76f42e128112d7093f5698d19e13` |
 | Run by | `____` |
+
+Training took **6.4 minutes**, not the 25–45 originally estimated — 700 images at 640 px on a T4 is a small job. The environment is captured verbatim in [`results/pip_freeze.txt`](results/pip_freeze.txt) and the machine-readable run record in [`results/metrics.json`](results/metrics.json).
 
 ### Reproducibility checklist
 
-- [ ] **Dataset version:** `yazan-darwish/construction-site-km7bh-fapwu`, version `1`, YOLOv8 export. Forked from [`seungyeon/construction-site-km7bh`](https://universe.roboflow.com/seungyeon/construction-site-km7bh) and re-split.
-- [ ] **Split:** 560 train / 140 validation (80/20), rebalanced from the source's 70/20/10 in Roboflow
-- [ ] **Model variant:** `yolov8s.pt` (COCO-pretrained), Ultralytics default architecture
-- [ ] **Epochs:** 30
-- [ ] **Batch size:** 16
-- [ ] **Image size:** 640
-- [ ] **Optimiser / LR:** Ultralytics defaults (`optimizer='auto'`, `lr0=0.01`), not overridden
-- [ ] **Random seed:** `0` (Ultralytics default, set explicitly in the config cell)
-- [ ] **Ultralytics version:** pinned in `requirements.txt` and printed by the notebook at runtime
-- [ ] **Full environment:** `pip freeze` output written to `results/pip_freeze.txt` by the notebook
+- [x] **Dataset version:** `yazan-darwish/construction-site-km7bh-fapwu`, version `1`, YOLOv8 export. Forked from [`seungyeon/construction-site-km7bh`](https://universe.roboflow.com/seungyeon/construction-site-km7bh) and re-split.
+- [x] **Split:** 560 train / 140 validation (80/20), rebalanced from the source's 70/20/10 in Roboflow
+- [x] **Model variant:** `yolov8s.pt` (COCO-pretrained), Ultralytics default architecture
+- [x] **Epochs:** 30
+- [x] **Batch size:** 16
+- [x] **Image size:** 640
+- [x] **Optimiser / LR:** Ultralytics defaults (`optimizer='auto'`, `lr0=0.01`), not overridden
+- [x] **Random seed:** `0` (Ultralytics default, set explicitly in the config cell)
+- [x] **Ultralytics version:** `8.4.157` — pinned in `requirements.txt` and printed by the notebook at runtime
+- [x] **Full environment:** `pip freeze` output written to `results/pip_freeze.txt` by the notebook
 - [ ] **Weights:** published as a GitHub Release asset — see §7
-- [ ] **Hardware:** recorded in the table above
+- [x] **Hardware:** recorded in the table above
 - [ ] **Notebook runs end to end from a clean runtime:** verified on the date above
 
 **Code-path verification.** Before the first training run, every Ultralytics API call in `01_training_eval.ipynb` and `02_baseline_inference.ipynb` was executed against **ultralytics 8.4.157 / torch 2.14.0** on a synthetic five-class dataset, to confirm no cell raises. Two issues were found and fixed: `model.val()` wrote its plots outside the results tree until `project`/`name` were passed, and the precision-recall plot is named `BoxPR_curve.png` in the 8.4 series, not `PR_curve.png`. This is a check that the pipeline *executes*; it is not a substitute for the full cold-start run recorded above.

@@ -98,6 +98,24 @@ At the default, **more than a third of real objects are already being dropped**.
 
 ---
 
+### Outcome — the graded run has now happened
+
+The YOLOv8s run on version 1 landed at **mAP@50 0.943**, far above the cross-check's 0.635. Both are inflated by the same cause: near-duplicate frames split across train and validation (evidence in README §4.1). The comparison is still useful for **ranking**, because both runs are equally advantaged.
+
+| Class | YOLOv8s (graded, v1) | YOLOv11n (cross-check, v2) | Agreement |
+|---|---|---|---|
+| `brick` | 0.995 | 0.844 | strong in both |
+| `excavator` | 0.995 | 0.856 | strong in both |
+| `scaffold` | 0.979 | 0.866 | strong in both |
+| `pvcpipe` | 0.964 | 0.637 | **diverges** |
+| `steelbar` | **0.781** | **0.539** | **weakest in both** |
+
+**Confirmed:** `steelbar` is the worst class under two different architectures, despite having the most training instances (226 in train). The instance-count hypothesis stays falsified; the shape-and-group-boxing explanation stands.
+
+**Not confirmed:** `pvcpipe` was predicted to be weak alongside `steelbar` on the same "thin and elongated" reasoning. It scored 0.964 on the graded run. So elongation alone does not explain the deficit — what separates `steelbar` is that it is routinely **bundled and tangled**, which is precisely where our one-box-per-group rule stops being decidable. That narrows the hypothesis rather than confirming it, and it is a better finding for having been narrowed.
+
+---
+
 ### What this does and does not license us to say
 
 **Does:** it gives us a prior. If the graded YOLOv8 run shows the same shape — misses dominating, `steelbar` and `pvcpipe` weakest, localisation poor on the thin classes — that is two independent architectures agreeing, which is stronger evidence than either alone.
