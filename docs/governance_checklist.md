@@ -15,9 +15,9 @@ Site photography is people photography. A construction site is a workplace, and 
 |---|---|---|---|
 | 1.1 | No class detects, identifies or tracks people. The five classes are materials, structures and plant. | ☑ | A design decision, not an accident. Adding a `person` class would change the system's legal character — see the regulatory note below. |
 | 1.2 | Source images are published under CC BY 4.0 by their authors, who hold the right to publish them. | ☑ | Base dataset: `seungyeon/construction-site-km7bh` on Roboflow Universe. |
-| 1.3 | Images added by us were taken with the site's permission, or sourced from openly licensed material. | ☐ | Every added image is recorded with source, licence name and URL in [`image_provenance.md`](image_provenance.md). All are stock-library images, not site photography — the limitation that creates is stated there. |
-| 1.4 | Faces and legible ID badges in images we added have been blurred, or the image was excluded. | ☐ | `Record how many images were blurred and how many excluded.` |
-| 1.5 | No image carries GPS EXIF data identifying a private site. | ☐ | Strip EXIF before upload. Roboflow does not do this for you. |
+| 1.3 | Images added by us were taken with the site's permission, or sourced from openly licensed material. | ☑ | **No images were added to the training dataset.** 25 candidates were sourced and checked; 20 were watermarked Shutterstock previews with no licence and were rejected, 5 were CC0 and held in reserve unused. Full record, including why, in [`image_provenance.md`](image_provenance.md) §A. The 7 held-out images in `data/new_images/` are our own photographs. |
+| 1.4 | Faces and legible ID badges in images we added have been blurred, or the image was excluded. | ☑ | Held-out set: 1 image contains a person, back turned, face not visible — retained. 0 blurred, 0 excluded on face grounds. Two of the five reserve images contain identifiable faces and are flagged in `image_provenance.md` §A.2 so they cannot be added without the obligation being noticed. |
+| 1.5 | No image carries GPS EXIF data identifying a private site. | ☑ | All 7 held-out images re-encoded onto a clean canvas at import, which drops every EXIF field including GPS. Verified, not assumed. |
 | 1.6 | No personal data is stored in labels, filenames or metadata. | ☑ | Filenames are non-descriptive. |
 | 1.7 | If deployed on a real site, workers would be informed before cameras are installed. | ☐ | Not applicable to this prototype; mandatory before any pilot. Notice, not consent, is usually the correct basis for a workplace safety system — but the notice is not optional. |
 
@@ -121,7 +121,9 @@ Even at the correct thresholds, this model will miss objects and invent objects.
 
 **Code and notebooks.** MIT Licence — see [`../LICENSE`](../LICENSE). Permissive; reuse with attribution.
 
-**Dataset.** *Public, licensed — not owned by us.* The base dataset [`seungyeon/construction-site-km7bh`](https://universe.roboflow.com/seungyeon/construction-site-km7bh) is published on Roboflow Universe under **CC BY 4.0**. We use it under that licence with attribution and do not redistribute it here. Images we added ourselves are contributed to our Roboflow project under the same CC BY 4.0 terms, so the combined dataset stays coherently licensed. Anyone reusing this work must credit the original dataset authors.
+**Dataset.** *Public, licensed — not owned by us.* The base dataset [`seungyeon/construction-site-km7bh`](https://universe.roboflow.com/seungyeon/construction-site-km7bh) is published on Roboflow Universe under **CC BY 4.0**. We use it under that licence with attribution and do not redistribute it here. **We added no images of our own to it** — see [`image_provenance.md`](image_provenance.md) §A for the candidates we sourced and why they were rejected — so the training dataset is wholly CC BY 4.0 with a single upstream attribution. Anyone reusing this work must credit the original dataset authors.
+
+**Held-out test images.** The seven images in `data/new_images/` are our own photographs, released with this repository under **CC BY 4.0**. They are not part of the dataset and were never trained on.
 
 **Model weights.** Derived from Ultralytics YOLOv8, distributed under **AGPL-3.0**. The weights we release inherit that obligation. Academic and evaluation use is unrestricted. **Commercial deployment requires either full AGPL-3.0 compliance — including publishing the source of any networked service built on it — or a commercial licence purchased from Ultralytics.** This is a real constraint and the most common licensing mistake made with YOLO models; it is recorded here so that nobody inherits it unknowingly.
 
@@ -132,5 +134,6 @@ Even at the correct thresholds, this model will miss objects and invent objects.
 | Notebooks and code | MIT | Yes | Yes |
 | Documentation | MIT | Yes | Yes |
 | Base dataset images | CC BY 4.0 | No | By reference, with attribution |
-| Images we added | CC BY 4.0 | Yes | Yes, with attribution |
+| Images we added to the dataset | — | — | **None — see `image_provenance.md` §A** |
+| Held-out images (`data/new_images/`) | CC BY 4.0 | Yes — our own photographs | Yes, with attribution |
 | Trained weights | AGPL-3.0 (inherited) | Derived | Yes, with AGPL obligations |

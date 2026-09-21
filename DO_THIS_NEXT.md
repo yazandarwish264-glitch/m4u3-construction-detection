@@ -22,7 +22,8 @@ The dataset is built and live. What remains needs your GitHub and Google account
 | `LICENSE`, `.gitignore`, `requirements.txt` | **Done** |
 | Trained weights | Not started — needs a Colab GPU |
 | GitHub repository | Not started — needs your account |
-| Your own 25 images | Not started — needs your camera |
+| Held-out test images | **Done** — 7 of our own photographs in `data/new_images/` |
+| Dataset expansion (25 images) | **Dropped.** 20 were watermarked Shutterstock previews, 5 were CC0 but too few to matter. Not required by the brief. See `docs/image_provenance.md` §A |
 
 **Nothing in the notebooks needs editing except `WEIGHTS_URL` and `REPO_URL`.** The Roboflow workspace, project and version are already filled in.
 

@@ -354,7 +354,7 @@ Both notebooks read this URL from `WEIGHTS_URL` in their config cell; it is alre
 | [Class definitions](docs/class_definitions.md) | The five classes, inclusion and exclusion rules, occlusion convention |
 | [Error analysis](docs/error_analysis.md) | Three false positives and three false negatives with hypotheses, plus three prioritised dataset improvements |
 | [Governance checklist](docs/governance_checklist.md) | Privacy and consent, data minimisation, limitations statement, false-negative vs false-positive risk |
-| [Image provenance](docs/image_provenance.md) | Source, licence and URL for every image we added, plus the stock-photography limitation |
+| [Image provenance](docs/image_provenance.md) | Source and licence for every image outside the base dataset — including the 20 candidates rejected on licence grounds, and why |
 | [SAM exploration](docs/sam_exploration.md) | Where the Segment Anything Model assisted annotation and where it did not |
 | [Slides (PDF)](reports/slides.pdf) | 8-slide summary |
 | [Mini report (PDF)](reports/mini_report.pdf) | 2-page executive summary, results and limitations |
