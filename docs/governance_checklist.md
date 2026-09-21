@@ -52,7 +52,11 @@ This model must **not** be used for:
 5. **Conditions outside the training distribution.** The training data is daytime site photography at moderate range. Performance is unknown and unvalidated in: night and artificial-light conditions, heavy dust or rain, drone and high-oblique views, thermal or infrared imagery, and enclosed spaces such as shafts and basements. In GCC conditions specifically, high-glare midday exposure and airborne dust are both outside the validated range.
 6. **Automated action without human review.** Every output is a prompt for a person to look, not a decision. No downstream process should trigger on a detection alone.
 
-7. **The `scaffold` class as any kind of access-safety check.** It reports that a structure is present. It says nothing about whether that structure is erected correctly, tied, boarded, inspected or safe to climb. Treating a `scaffold` detection as evidence of a compliant scaffold would be the single most dangerous misreading of this model.
+7. **Wide-field or establishing shots — which is how site progress photography is actually taken.** Measured on seven held-out images: at the evaluation setting of `imgsz=640` the model returned nothing on an unobstructed excavator and nothing on a frame full of reinforcement bar. It detected them only when the input resolution was raised. Until improvement D2 in [`error_analysis.md`](error_analysis.md) is done, this model is only usable on close, subject-filling photographs, and a site photographer must be told so explicitly — otherwise the system silently reports "no progress" on exactly the images most likely to be taken.
+
+8. **Any image at a resolution other than the one it was evaluated at.** The predicted class changes with `imgsz`. This is a defect, not a tuning parameter, and until it is fixed the pipeline must pin the input size end to end.
+
+9. **The `scaffold` class as any kind of access-safety check.** It reports that a structure is present. It says nothing about whether that structure is erected correctly, tied, boarded, inspected or safe to climb. Treating a `scaffold` detection as evidence of a compliant scaffold would be the single most dangerous misreading of this model.
 
 **Validated scope.** Daytime, outdoor or well-lit indoor construction photography, handheld or fixed camera at normal working range, of the five defined classes, used to **triage** which photographs a human should examine.
 
@@ -95,6 +99,18 @@ A false positive here sends a supervisor to check a zone that is fine. Do that r
 *First, the default is badly wrong for this system.* The optimal overall threshold is **0.09**, not Ultralytics' default of 0.25. At 0.25 recall has already fallen to 0.55 and by 0.30 to 0.37 — at the default, more than a third of real objects are being silently dropped. Shipping the default here would have maximised exactly the error the section above identifies as the dangerous one.
 
 *Second, the right unit is the class, not the use case.* Each class has its own operating point, and they do not group neatly by intended use. `scaffold` reaches precision 1.000 at a threshold of 0.06, so for that class a low threshold costs nothing — recall and precision are not in tension at all. The two-threshold framing still holds, because the progress classes and the site-condition classes are disjoint sets, but the honest statement is: **set the threshold per class from the curve, and let the use case decide which way to round when the curve is ambiguous.**
+
+### The limit of this argument, measured after the fact
+
+Everything above is about choosing a point on a precision–recall curve. That framing assumes the detection exists somewhere on the curve and the only question is where to cut. **On images outside the training distribution, it does not exist anywhere on the curve.**
+
+Tested on the seven first-party held-out images (README §4.2), lowering the confidence threshold from 0.25 to 0.02 recovered **no** correct detections. The objects that were missed produced no proposal of the right class at any threshold. Separately, changing only the input resolution changed the predicted *class* — `new_04` moves from `scaffold` 0.78 to `brick` 0.46 between `imgsz` 640 and 2560.
+
+Three consequences for deployment, and they are not small:
+
+1. **The two-threshold rule below is valid only in-distribution.** It is a real improvement over shipping the 0.25 default, and it should still be applied — but it buys recall only where the model can see the object at all. It is not a mitigation for the generalisation failure.
+2. **`imgsz` must be pinned and version-controlled like any other model parameter.** It is normally treated as a performance knob. Here it changes the answer, so a deployment that resizes images differently from evaluation is running a different classifier.
+3. **Confidence is not calibrated across distributions.** The single most confident prediction on unseen data (0.78) was wrong about the class. Any downstream rule of the form "act automatically above 0.7" would have acted on it.
 
 ### Residual risk we accept
 

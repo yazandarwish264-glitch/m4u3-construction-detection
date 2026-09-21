@@ -110,28 +110,20 @@ RF_VERSION   = 1
 
 Version 1 applies no augmentation. Adding augmentation before a baseline exists hides what the data is doing — you cannot tell whether a gain came from the augmentation or from the model, and you cannot tell which class was weak to begin with. The baseline comes first; augmentation, if it is warranted, becomes version 2 and is justified by the error analysis.
 
-### Our layer — added images
+### Our layer — no images were added
 
-> **TODO:** complete after adding your own images. The unit requires 25, of which at least 5 are boundary cases.
+We sourced 25 candidate images to extend the dataset and added **none of them**. Twenty were watermarked Shutterstock previews carrying no usable licence; five were CC0 but too few to move a 700-image dataset. The full record, including the three grounds for rejection, is in [`docs/image_provenance.md`](docs/image_provenance.md) §A.
 
 | Field | Value |
 |---|---|
-| Images added by us | `__` (target: 25 minimum) |
-| Of which boundary cases | `__` (target: 5 minimum) |
-| Version regenerated after adding | `__` |
-| Annotation tool | Roboflow annotate, SAM-assisted — see [`docs/sam_exploration.md`](docs/sam_exploration.md) |
-| Provenance and licences | Recorded per image in [`docs/image_provenance.md`](docs/image_provenance.md) |
-| QA | Every added image reviewed by a second group member against [`docs/class_definitions.md`](docs/class_definitions.md) |
+| Images added to the training dataset | **0** |
+| Candidates sourced, checked and rejected | 20 (no licence) |
+| Candidates cleared but unused | 5 (Piqsels, CC0 1.0) |
+| Training dataset | The base Roboflow project unchanged — 700 images, wholly CC BY 4.0 |
+| Held-out images we do own | 7 first-party photographs in `data/new_images/`, never trained on |
+| Provenance and licences | Recorded in [`docs/image_provenance.md`](docs/image_provenance.md) |
 
-**Boundary cases to add** — the objects that look like a class and are not. The first row is the important one: it targets the `steelbar`/`scaffold` boundary that we expect to dominate the confusion matrix.
-
-| File | Looks like | Actually is | Rule it tests |
-|---|---|---|---|
-| `__` | `steelbar` | Loose scaffold tube on the ground | Belongs to *neither* class — the hardest rule in the contract |
-| `__` | `scaffold` | Ladder, handrail or hoarding frame | "Erected access structure", not any vertical frame |
-| `__` | `brick` | Stone cladding or paving block | Material versus form |
-| `__` | `pvcpipe` | Metal conduit under dust | Material identification when colour is unreliable |
-| `__` | `excavator` | Wheeled loader or dozer | Machine type, not just "yellow plant" |
+The assignment brief does not require dataset expansion, so nothing in the rubric depends on this. What it did cost is measurable and is recorded rather than hidden: two of the five rejected boundary cases targeted the exact confusions that later appeared as FP-1 and FP-2 in [`docs/error_analysis.md`](docs/error_analysis.md).
 
 The dataset is **not** committed to this repository. The training notebook downloads it at runtime from Roboflow using your own API key, which keeps credentials out of version control and the repo small. See §5.
 
@@ -139,9 +131,7 @@ The dataset is **not** committed to this repository. The training notebook downl
 
 ## 4. Results summary
 
-> **STATUS: awaiting first full training run.** The table below is the reporting template. Numbers are filled from the run summary printed by `notebooks/01_training_eval.ipynb`. Do not submit with placeholders in place.
-
-### Overall (validation set, 190 images)
+### Overall (validation set, 140 images)
 
 | Metric | Value |
 |---|---|
@@ -188,17 +178,47 @@ Three independent signals say the train/validation split leaks:
 
 **What the numbers still support.** Per-class *ranking* is still informative, because every class is equally advantaged: `steelbar` is the weakest class at 0.781 despite having the most training instances, and it was also weakest in an independent YOLOv11n cross-check at 0.539. Two architectures agreeing on that ordering is a real finding.
 
-**What they do not support.** Any claim about performance on unseen sites. The five images in `data/new_images/` are the only honest generalisation evidence in this project, and they should be weighted accordingly.
+**What they do not support.** Any claim about performance on unseen sites. The seven images in `data/new_images/` are the only honest generalisation evidence in this project. Section 4.2 reports what they showed.
 
 **The fix**, and the first entry in our iteration plan: re-split by **group** rather than at random — cluster images by filename prefix and sequence number so that consecutive frames stay on the same side — then retrain and report both numbers side by side.
 
+### 4.2 What happened on images the model had never seen
+
+The seven first-party photographs in `data/new_images/` were never in the Roboflow project, never in any split, and never in a shoot that fed one. They are the only measurement here that the leakage in §4.1 cannot flatter. At the same settings used for validation — conf 0.25, `imgsz=640`:
+
+| | Validation (10 images) | Held-out (7 images) |
+|---|---|---|
+| Prediction matched what is in the image | **8 of 10** | **1 of 7**, and that one marginally (0.254) |
+| Wrong-class detections | 0 | 2, one of them at confidence **0.78** |
+| Images returning nothing at all | 0 | 4 |
+
+Two of the seven were chosen as **controls** — a `brick` wall and an `excavator`, the classes that scored mAP@50 0.995 with recall **1.000** on validation. Both failed: the blockwork wall was called `scaffold` at 0.78, and the excavator was not detected at all.
+
+**Lowering the confidence threshold does not recover it.** At conf 0.02 — effectively "show everything considered" — the missed objects still produce no proposal of the right class. The detections are not hiding below the threshold; they were never made. This matters because §4 of the governance checklist argues for a low operating threshold to protect recall, and that argument only works in-distribution.
+
+**Changing the input resolution changes the predicted class.** Same weights, same image, same threshold:
+
+| Image | `imgsz=640` | `imgsz=1280` | `imgsz=2560` | Truth |
+|---|---|---|---|---|
+| `new_04` | `scaffold` 0.78 | `scaffold` 0.31 | **`brick` 0.46** | `brick` |
+| `new_05` | `scaffold` 0.28 | `steelbar` 0.27 | `steelbar` 0.57 | `pvcpipe` |
+| `new_03` | nothing | **`excavator` 0.52** | nothing | `excavator` |
+
+Evidence: [`results/evidence/new_images/resolution_instability.png`](results/evidence/new_images/resolution_instability.png).
+
+A model that had learned what blockwork *is* would not change its mind when the image is resampled. One that has learned a spatial-frequency signature would. That is the conclusion [`docs/error_analysis.md`](docs/error_analysis.md) reaches, and it explains the validation/held-out gap: validation images match the training set's framing and apparent object size by construction, and our own photographs do not.
+
+**Seven images is a probe, not a statistic.** It establishes that the failure mode exists; it cannot say how often it occurs.
+
 ### Key takeaways
 
-1. **Every success criterion was met, and that is the least interesting thing here.** S1 wanted mAP@50 ≥ 0.50 and got 0.943; S2 wanted `steelbar` recall ≥ 0.50 and got 0.612; S3 wanted `brick` recall ≥ 0.40 and got 1.000. Clearing a bar by that margin is itself evidence something is wrong with the measurement, which is what §4.1 documents.
+1. **The model scores mAP@50 0.943 on validation and detects almost nothing on our own photographs.** One marginal correct detection across seven unseen images, two confident wrong-class calls, four blanks — including both deliberate control classes. Section 4.2 has the numbers. This is the result that matters, and it is only visible because the held-out set exists.
 
-2. **`steelbar` is the weakest class in both architectures we tried.** 0.781 here, 0.539 in the YOLOv11n cross-check — worst of the five in each, despite having the *most* training instances (226). Instance count does not explain it; object shape and our group-boxing rule do. Its recall (0.612) is the lowest of any class by a wide margin, meaning the model is missing reinforcement steel that is genuinely in frame.
+2. **The failure is scale and texture, not capacity.** Changing only `imgsz` flips `new_04` from `scaffold` 0.78 to `brick` 0.46. Predictions that move under a semantically empty transformation indicate the model learned an image signature rather than an object class — so a larger architecture would raise the leaking validation figure and change none of the seven results.
 
-3. **The dominant error is missing things, not mislabelling them.** Overall precision (0.950) sits well above recall (0.884). For the progress-logging use case that is the wrong way round — a missed detection produces no record and nobody investigates, which is the silent failure the governance note identifies as the costly one.
+3. **`steelbar` is the weakest class under both architectures tried** — 0.781 here, 0.539 in an independent YOLOv11n cross-check — despite having the *most* training instances (226). Instance count does not explain it; object shape and our own group-boxing rule do.
+
+4. **Every success criterion was met, and that is the least interesting thing in this report.** S1 wanted mAP@50 ≥ 0.50 and got 0.943. Clearing a bar by that margin is itself evidence the measurement is wrong, which §4.1 documents and §4.2 confirms independently.
 
 Curves and confusion matrix: [`results/curves/`](results/curves/) · Prediction examples: [`results/evidence/`](results/evidence/) · Full error analysis: [`docs/error_analysis.md`](docs/error_analysis.md)
 

@@ -1,0 +1,190 @@
+{
+  "run_utc": "2026-09-21T22:37:40Z",
+  "weights_url": "https://github.com/yazandarwish264-glitch/m4u3-construction-detection/releases/download/v1.0/best.pt",
+  "weights_sha256": "1c6bed773b68ac17bd1491d86431dd30178b76f42e128112d7093f5698d19e13",
+  "conf_threshold": 0.25,
+  "iou_threshold": 0.45,
+  "imgsz": 640,
+  "ultralytics": "8.4.158",
+  "validation": [
+    {
+      "image": "scaffold_9767j_jpeg.rf.3efeeae299f16e29219d665b6098c635.jpg",
+      "gt": 1,
+      "pred": 2,
+      "detections": [
+        [
+          "scaffold",
+          0.9203417897224426
+        ],
+        [
+          "scaffold",
+          0.2744085192680359
+        ]
+      ]
+    },
+    {
+      "image": "080991_jpg.rf.c58e81d4554f619e70e72ca5d6c2fce8.jpg",
+      "gt": 2,
+      "pred": 2,
+      "detections": [
+        [
+          "excavator",
+          0.9321985840797424
+        ],
+        [
+          "excavator",
+          0.7931301593780518
+        ]
+      ]
+    },
+    {
+      "image": "pvcPipe_5596_jpg.rf.3282a14a94036355921e61b72070c5c0.jpg",
+      "gt": 1,
+      "pred": 1,
+      "detections": [
+        [
+          "pvcpipe",
+          0.8777219653129578
+        ]
+      ]
+    },
+    {
+      "image": "steelBar_5424k_jpg.rf.c15219ab66e4c74ac41756a8abd98f30.jpg",
+      "gt": 2,
+      "pred": 2,
+      "detections": [
+        [
+          "steelbar",
+          0.7745981216430664
+        ],
+        [
+          "steelbar",
+          0.2581767439842224
+        ]
+      ]
+    },
+    {
+      "image": "steelBar_5368k_jpg.rf.cd92c946726a2a81e0c8ea5a7393ea82.jpg",
+      "gt": 2,
+      "pred": 2,
+      "detections": [
+        [
+          "steelbar",
+          0.531588613986969
+        ],
+        [
+          "steelbar",
+          0.2505141794681549
+        ]
+      ]
+    },
+    {
+      "image": "scaffold_9736j_jpeg.rf.0ccf2844400a2eabeca83f4cdcb8d853.jpg",
+      "gt": 1,
+      "pred": 1,
+      "detections": [
+        [
+          "scaffold",
+          0.946206271648407
+        ]
+      ]
+    },
+    {
+      "image": "pvcPipe_5987_jpg.rf.c8ddda60a83345662ac3b3386ba647a0.jpg",
+      "gt": 1,
+      "pred": 1,
+      "detections": [
+        [
+          "pvcpipe",
+          0.9498988389968872
+        ]
+      ]
+    },
+    {
+      "image": "steelBar_5357k_jpg.rf.d8de9b93355f408d0e45e2f58a22b903.jpg",
+      "gt": 2,
+      "pred": 3,
+      "detections": [
+        [
+          "steelbar",
+          0.8749425411224365
+        ],
+        [
+          "steelbar",
+          0.6406140923500061
+        ],
+        [
+          "steelbar",
+          0.43301495909690857
+        ]
+      ]
+    },
+    {
+      "image": "scaffold_9168e_jpg.rf.2b758ab7b9be6c29946b16359aa39cbb.jpg",
+      "gt": 1,
+      "pred": 1,
+      "detections": [
+        [
+          "scaffold",
+          0.9456889629364014
+        ]
+      ]
+    },
+    {
+      "image": "brick_6262c_jpg.rf.cc8f300d761c75d5b45926a1a91403f9.jpg",
+      "gt": 1,
+      "pred": 1,
+      "detections": [
+        [
+          "brick",
+          0.9281898140907288
+        ]
+      ]
+    }
+  ],
+  "new_images": [
+    {
+      "image": "new_01.jpg",
+      "detections": []
+    },
+    {
+      "image": "new_02.jpg",
+      "detections": [
+        [
+          "steelbar",
+          0.254
+        ]
+      ]
+    },
+    {
+      "image": "new_03.jpg",
+      "detections": []
+    },
+    {
+      "image": "new_04.jpg",
+      "detections": [
+        [
+          "scaffold",
+          0.778
+        ]
+      ]
+    },
+    {
+      "image": "new_05.jpg",
+      "detections": [
+        [
+          "scaffold",
+          0.279
+        ]
+      ]
+    },
+    {
+      "image": "new_06.jpg",
+      "detections": []
+    },
+    {
+      "image": "new_07.jpg",
+      "detections": []
+    }
+  ]
+}
