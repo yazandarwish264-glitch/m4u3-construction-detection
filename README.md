@@ -54,15 +54,14 @@ Five classes, inherited from the source dataset's annotation schema:
 | 3 | `scaffold` | Erected scaffolding and access towers | Loose tube on the ground, handrail, formwork, ladders | 181 (17.5%) |
 | 4 | `steelbar` | Reinforcement bar — loose, bundled, tied in cages, or cast-in | Structural steel, **scaffold tube**, mesh fencing | 284 (27.4%) |
 
-**We predicted the `steelbar`/`scaffold` boundary would dominate the confusion matrix. It did not.** A hosted YOLOv11n cross-check on the same images produced **zero** steelbar/scaffold confusions in either direction, and only one inter-class error in the whole validation set.
+**We predicted the `steelbar`/`scaffold` boundary would dominate the confusion matrix. It did not.** A hosted YOLOv11n cross-check produced **zero** steelbar/scaffold confusions in either direction, and one inter-class error in the whole validation set. Two things replaced that prediction:
 
-What the evidence shows instead:
+- **The error mode is missing objects, not mislabelling them.** In the cross-check, 95 of 103 errors were objects never detected; 8 were false positives; 1 was a class confusion. The graded run shows the same signature — precision (0.950) well above recall (0.884).
+- **`steelbar` is the weakest class under both architectures.** mAP@50 **0.781** on the graded YOLOv8s run and **0.539** on the YOLOv11n cross-check — worst of the five in each, despite having the *most* training instances. Its recall (0.612) is the lowest by a wide margin.
 
-- **The error mode is missed detections, not mislabelling.** 95 of 103 errors are objects the model never saw; 8 are false positives; 1 is a class confusion.
-- **Instance count does not predict performance.** `brick` has the fewest instances (140) and scores mAP@50 0.844. `steelbar` has the most (284) and scores 0.539, the worst of the five.
-- **Shape predicts performance.** Compact objects with a clear outline — `excavator`, `scaffold`, `brick` stacks — land at 0.84–0.87. Thin, elongated, group-boxed objects — `pvcpipe`, `steelbar` — land at 0.54–0.64, and their mAP@75 collapses to 0.06–0.07, meaning even the detections they do make are badly localised.
+**Instance count does not explain this.** `brick` has the fewest instances and scores 0.995. The hypothesis that survives is our own labelling rule, *one box per visually separable group*, which is undecidable for a tangled bundle of bar: the training target is inconsistent image to image, so there is no stable boundary to learn.
 
-That last point traces back to our own labelling rule, *one box per visually separable group*, which is ill-defined for a tangled bundle of bar. The training target is inconsistent, so the model cannot learn the boundary. Full evidence: [`docs/error_analysis.md`](docs/error_analysis.md) §0.
+We first blamed "thin and elongated" objects generally, which would have implicated `pvcpipe` too. It scored 0.964 on the graded run, so that is wrong — the distinguishing feature of `steelbar` is that it comes **bundled**, not that it is thin. Narrowing that hypothesis is documented in [`docs/error_analysis.md`](docs/error_analysis.md) §0.
 
 Full label rules, edge cases, the occlusion convention and the accepted ambiguities: [`docs/class_definitions.md`](docs/class_definitions.md).
 
@@ -297,16 +296,18 @@ Training took **6.4 minutes**, not the 25–45 originally estimated — 700 imag
 
 ## 7. Trained weights
 
-Weights are distributed as a **GitHub Release asset**, not committed to the repository (a `.pt` file is ~22 MB and does not belong in git history).
+Distributed as a **GitHub Release asset**, not committed to the repository — a 22.5 MB binary cannot be removed from git history once pushed.
 
-> **TODO before submission:** create a release and paste the link here.
-> `Releases → Draft a new release → Tag v1.0 → attach best.pt → Publish`
+| Asset | Value |
+|---|---|
+| File | [`best.pt`](https://github.com/yazandarwish264-glitch/m4u3-construction-detection/releases/download/v1.0/best.pt) |
+| Release | [`v1.0` — Trained weights v1.0](https://github.com/yazandarwish264-glitch/m4u3-construction-detection/releases/tag/v1.0) |
+| Size | 22.5 MB (22,520,170 bytes) |
+| SHA-256 | `1c6bed773b68ac17bd1491d86431dd30178b76f42e128112d7093f5698d19e13` |
+| Architecture | `yolov8s`, 5 classes |
+| Licence | AGPL-3.0, inherited from Ultralytics — see §10 |
 
-| Asset | Link | Size | SHA-256 |
-|---|---|---|---|
-| `best.pt` | `PASTE RELEASE ASSET URL HERE` | `__ MB` | `__` |
-
-Both notebooks read the weights from the constant `WEIGHTS_URL` in their config cell. Update it in both places once the release exists.
+Both notebooks read this URL from `WEIGHTS_URL` in their config cell; it is already set. Notebook 02 prints the SHA-256 of what it downloads — if it does not match the value above, the released file is not the model that produced the reported metrics.
 
 ---
 
