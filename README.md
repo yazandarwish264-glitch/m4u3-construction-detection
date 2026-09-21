@@ -120,6 +120,7 @@ Version 1 applies no augmentation. Adding augmentation before a baseline exists 
 | Of which boundary cases | `__` (target: 5 minimum) |
 | Version regenerated after adding | `__` |
 | Annotation tool | Roboflow annotate, SAM-assisted — see [`docs/sam_exploration.md`](docs/sam_exploration.md) |
+| Provenance and licences | Recorded per image in [`docs/image_provenance.md`](docs/image_provenance.md) |
 | QA | Every added image reviewed by a second group member against [`docs/class_definitions.md`](docs/class_definitions.md) |
 
 **Boundary cases to add** — the objects that look like a class and are not. The first row is the important one: it targets the `steelbar`/`scaffold` boundary that we expect to dominate the confusion matrix.
@@ -353,6 +354,7 @@ Both notebooks read this URL from `WEIGHTS_URL` in their config cell; it is alre
 | [Class definitions](docs/class_definitions.md) | The five classes, inclusion and exclusion rules, occlusion convention |
 | [Error analysis](docs/error_analysis.md) | Three false positives and three false negatives with hypotheses, plus three prioritised dataset improvements |
 | [Governance checklist](docs/governance_checklist.md) | Privacy and consent, data minimisation, limitations statement, false-negative vs false-positive risk |
+| [Image provenance](docs/image_provenance.md) | Source, licence and URL for every image we added, plus the stock-photography limitation |
 | [SAM exploration](docs/sam_exploration.md) | Where the Segment Anything Model assisted annotation and where it did not |
 | [Slides (PDF)](reports/slides.pdf) | 8-slide summary |
 | [Mini report (PDF)](reports/mini_report.pdf) | 2-page executive summary, results and limitations |

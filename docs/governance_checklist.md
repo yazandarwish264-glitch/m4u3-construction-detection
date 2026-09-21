@@ -15,7 +15,7 @@ Site photography is people photography. A construction site is a workplace, and 
 |---|---|---|---|
 | 1.1 | No class detects, identifies or tracks people. The five classes are materials, structures and plant. | ☑ | A design decision, not an accident. Adding a `person` class would change the system's legal character — see the regulatory note below. |
 | 1.2 | Source images are published under CC BY 4.0 by their authors, who hold the right to publish them. | ☑ | Base dataset: `seungyeon/construction-site-km7bh` on Roboflow Universe. |
-| 1.3 | Images added by us were taken with the site's permission, or sourced from openly licensed material. | ☐ | `Record for each added image: own photograph with permission from ____ / openly licensed from ____.` |
+| 1.3 | Images added by us were taken with the site's permission, or sourced from openly licensed material. | ☐ | Every added image is recorded with source, licence name and URL in [`image_provenance.md`](image_provenance.md). All are stock-library images, not site photography — the limitation that creates is stated there. |
 | 1.4 | Faces and legible ID badges in images we added have been blurred, or the image was excluded. | ☐ | `Record how many images were blurred and how many excluded.` |
 | 1.5 | No image carries GPS EXIF data identifying a private site. | ☐ | Strip EXIF before upload. Roboflow does not do this for you. |
 | 1.6 | No personal data is stored in labels, filenames or metadata. | ☑ | Filenames are non-descriptive. |
