@@ -262,7 +262,7 @@ VERIFICATION_RUN = False       # set True for the 5-epoch no-GPU fallback — se
 **Open:** `notebooks/02_baseline_inference.ipynb`
 
 1. **Runtime → Restart session and run all.**
-2. It downloads the released weights (no API key needed), runs inference on the 190 validation images and on the new images in `data/new_images/`, and writes annotated outputs to `results/evidence/`.
+2. It downloads the released weights (no API key needed), runs inference on a 10-image sample of the 140 validation images and on the new images in `data/new_images/`, and writes annotated outputs to `results/evidence/`.
 3. The last cell zips the evidence pack for download.
 
 ### Expected outputs
@@ -273,7 +273,8 @@ VERIFICATION_RUN = False       # set True for the 5-epoch no-GPU fallback — se
 | NB1 cell "Evaluate" | Printed P / R / mAP50 / mAP50-95 table, overall and per class |
 | NB1 cell "Save curves" | `results/curves/results.png`, `confusion_matrix.png`, `BoxPR_curve.png`, `labels.jpg` |
 | NB2 cell "Validation inference" | 10 annotated validation images in `results/evidence/validation/` |
-| NB2 cell "New-image inference" | 5 annotated new images in `results/evidence/new_images/` |
+| NB2 cell "New-image inference" | 7 annotated held-out images in `results/evidence/new_images/` |
+| NB2 cell "Resolution sensitivity" | `results/evidence/new_images/resolution_instability.png` |
 
 ---
 
@@ -291,7 +292,7 @@ VERIFICATION_RUN = False       # set True for the 5-epoch no-GPU fallback — se
 | torch | **2.11.0+cu128** |
 | Python | 3.13.15 |
 | Weights SHA-256 | `1c6bed773b68ac17bd1491d86431dd30178b76f42e128112d7093f5698d19e13` |
-| Run by | `____` |
+| Run by | Yazan Darwish, Colab free tier |
 
 Training took **6.4 minutes**, not the 25–45 originally estimated — 700 images at 640 px on a T4 is a small job. The environment is captured verbatim in [`results/pip_freeze.txt`](results/pip_freeze.txt) and the machine-readable run record in [`results/metrics.json`](results/metrics.json).
 

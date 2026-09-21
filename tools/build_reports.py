@@ -36,7 +36,7 @@ REPORTS.mkdir(exist_ok=True)
 TITLE = "Construction Element Detection for Site Progress Verification"
 SUBTITLE = "A cloud-only YOLOv8 pipeline for automated progress evidence"
 COURSE = "MAICEN0526  ·  Module 4 Unit 3  ·  Group 6"
-AUTHORS = "Author names here"
+AUTHORS = "Yazan Darwish  \u00b7  MAICEN0526 Group 6"
 DATE = "September 2026"
 
 # Overwritten from results/metrics.json when that file exists.
@@ -62,33 +62,38 @@ RUN = {
     "epochs": "30",
     "imgsz": "640",
     "batch": "16",
-    "hardware": "____",
-    "train_time": "__ min",
-    "run_date": "____-__-__",
+    "hardware": "Tesla T4, 15360 MiB (Colab free tier)",
+    "train_time": "6.4 min",
+    "run_date": "2026-09-21",
     "dataset": "yazan-darwish/construction-site-km7bh-fapwu v1",
 }
 
 TAKEAWAYS = [
-    "<b>All three success criteria were met, and that is the least interesting result.</b> "
-    "mAP@50 reached 0.943 against a 0.50 target. Clearing a bar that far is itself a signal "
-    "that the measurement is wrong, not that the model is excellent.",
-    "<b>The split leaks.</b> Consecutively numbered frames sit on both sides of it "
-    "(steelBar_5397k in train, 5398k in validation); mAP@50 was already 0.677 after one epoch; "
-    "two classes reach recall 1.000. The headline number is not a generalisation estimate.",
-    "<b>steelbar is weakest in both architectures tried</b> \u2014 0.781 here, 0.539 in an independent "
-    "YOLOv11n cross-check \u2014 despite having the most training instances. Shape and our group-boxing "
-    "rule explain it; instance count does not. Per-class ranking survives the leak; absolute values do not.",
+    "<b>Validation says 0.943 mAP@50. Our own photographs say almost nothing.</b> "
+    "Across seven held-out images the model produced one marginal correct detection, "
+    "two confident wrong-class detections and four blanks \u2014 including both classes "
+    "we had designated as controls at recall 1.000.",
+    "<b>The cause is scale, and it is testable.</b> Holding weights, image and confidence "
+    "fixed and changing only the input resolution, a blockwork wall moves from "
+    "scaffold 0.78 to brick 0.46. A model whose class prediction depends on resampling has "
+    "learned a texture signature, not an object. Lowering confidence to 0.02 recovers nothing.",
+    "<b>The fix is data, not capacity.</b> Re-split by scene group so validation can "
+    "detect this at all; add wide-field imagery and train multi-scale; add hard negatives "
+    "for the two confusions actually observed. A larger model would raise the leaking "
+    "number and change none of the seven held-out results.",
 ]
 
 LIMITATIONS = [
-    "The reported metrics are inflated by train/validation leakage from near-duplicate frames. "
-    "They measure memorisation as much as detection. Re-splitting by group is improvement D1.",
+    "Reported metrics are inflated by train/validation leakage from near-duplicate frames, "
+    "and the held-out set confirms it independently. They measure memorisation, not generalisation.",
+    "Predictions change class with input resolution. Until that is fixed, imgsz must be "
+    "pinned end to end, and confidence is not comparable across distributions.",
+    "Wide-field and establishing shots fail \u2014 which is how site progress photography is "
+    "actually taken. Validated only on close, subject-filling images.",
     "No safety function. The model detects no people, no PPE and no hazards. "
     "Treating it as a safety system would reduce site safety, not improve it.",
     "Presence only. It cannot measure quantity, spacing, cover or conformance, "
     "and its detection counts must never enter a payment application.",
-    "Validated scope is daytime site photography at working range. Night, dust, "
-    "rain, drone and enclosed-space imagery are untested.",
     "Human in the loop is mandatory. Every output is a prompt to look, not a decision.",
 ]
 
