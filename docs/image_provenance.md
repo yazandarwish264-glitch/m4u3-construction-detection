@@ -63,19 +63,43 @@ Each one tests a specific rule in [`class_definitions.md`](class_definitions.md)
 
 ---
 
-## B — Held-out images (target: 5)
+## B — Held-out images
 
-These go in `data/new_images/`. They are **never** uploaded to Roboflow and never trained on. Since the validation split is known to leak (README §4.1), these are the only unbiased evidence in the project.
+**Seven images, all photographed by us.** These live in `data/new_images/`, are never uploaded to Roboflow, and are never trained on. Because the validation split leaks (README §4.1), these are the only unbiased evidence in the project.
 
-| # | Filename | What is in it | Conditions | What we expect | Source | Licence | URL |
-|---|---|---|---|---|---|---|---|
-| 1 | `new_01.jpg` | | | | | | |
-| 2 | `new_02.jpg` | | | | | | |
-| 3 | `new_03.jpg` | | | | | | |
-| 4 | `new_04.jpg` | | | | | | |
-| 5 | `new_05.jpg` | | | | | | |
+The brief asks for five. We use seven because unbiased test images are the scarcest thing here and three extra cost nothing.
 
----
+| File | Location | What is in it | Classes | Role |
+|---|---|---|---|---|
+| `new_01.jpg` | `____` | Core wall under construction, rebar starters, timber formwork | `steelbar` | The weakest class, clear conditions |
+| `new_02.jpg` | `____` | Retaining wall, rebar starters, concrete pump boom, stacked timber | `steelbar`, plant | Weak class under clutter |
+| `new_03.jpg` | `____` | Excavation with tracked excavator, surrounding buildings | `excavator` | **Control** |
+| `new_04.jpg` | **Irbid, Jordan** | Blockwork wall with rebar starters, stacked concrete blocks | `brick`, `steelbar` | **Control** — taken while building our own home |
+| `new_05.jpg` | **Irbid, Jordan** | PVC conduit run on a concrete soffit with junction box | `pvcpipe` | Only close-range MEP image — taken while building our own home |
+| `new_06.jpg` | `____` | Large deck project, shoring and tower crane, distant | `scaffold` | **Hard case** — small objects at range |
+| `new_07.jpg` | `____` | Formwork panels and timber stacks beside a building | few / none | **Hard case** — mostly objects outside our schema |
+
+> **TODO:** fill the remaining `____` location cells. The set spans Amman, Irbid, Nashville and New York — record which is which.
+
+**Held back, not committed:**
+
+| Image | Why |
+|---|---|
+| Manhattan street scene | Contains none of the five classes. Retained as an optional false-positive probe: does a stone facade trigger `brick`? |
+| Two further views of the `new_06` site | Near-duplicates of `new_06` by visual inspection and perceptual hash (distances 28–35). Using all three would inflate the evidence the same way the validation leak does |
+
+### Provenance and handling
+
+- **All seven photographed by us.** No stock imagery in the held-out set.
+- **EXIF stripped from all seven** at import (re-encoded onto a clean canvas). Governance check 1.5.
+- **Renamed** to `new_01`–`new_07` so no filename carries incidental metadata.
+- One image contains a person, back turned, face not visible. Retained under check 1.4; flag for review if the group disagrees.
+
+### What this set does and does not establish
+
+**Does:** it spans **four cities on two continents** — Amman, Irbid, Nashville and New York. That is a harder generalisation test than a single site, because it varies construction method, materials, plant and light all at once. Two of the seven are from the authors' own house build in Irbid, which is about as unambiguous as provenance gets.
+
+**Does not:** seven images is a qualitative probe, not a statistical estimate. It can show that a class fails on unseen data; it cannot tell you how often. Any claim of the form "the model achieves X on new sites" is unsupported by a set this size.
 
 ## Before uploading — three checks
 
@@ -87,7 +111,7 @@ These go in `data/new_images/`. They are **never** uploaded to Roboflow and neve
 
 ## Limitation, stated plainly
 
-All added images were **sourced from stock photography libraries**, not photographed on site by us. Two consequences we accept and record rather than gloss:
+The **25 dataset images** were sourced from stock photography libraries, not photographed on site by us. (The seven held-out images in section B are our own photographs and are not affected by this.) Two consequences we accept and record rather than gloss:
 
 - **They are not GCC site imagery.** The stated use case is Gulf construction; stock libraries are dominated by European and North American sites. Lighting, dust, plant types and construction methods differ. Performance on an actual Omani or Kuwaiti site remains unmeasured.
 - **Stock photography is systematically unrepresentative.** It is well-lit, well-composed, and shot by photographers choosing attractive subjects. Real site photography is none of those things. A model validated on stock images will look better than it is.
