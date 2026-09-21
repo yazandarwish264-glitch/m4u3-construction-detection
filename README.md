@@ -34,7 +34,7 @@ Given a site photograph, it detects five classes of construction items and retur
 |---|---|---|---|
 | S1 | Overall validation mAP@50 | ≥ 0.50 | Sufficient for a *triage* tool: it directs a human to the right photographs, it does not replace the human. |
 | S2 | Recall on `steelbar` | ≥ 0.50 | The primary progress-bearing class, and the largest at 27.4% of instances. Missing it produces a false "no activity" reading, which is the costly error. |
-| S3 | Recall on `brick` | ≥ 0.40 | Second progress-bearing class. Lower bar set deliberately: at 13.5% of instances it is the weakest-represented class, so a lower target is honest rather than convenient. |
+| S3 | Recall on `brick` | ≥ 0.40 | Second progress-bearing class. The bar was set low because `brick` has the fewest instances (13.5%). The cross-check suggests this was the wrong reason — `brick` is among the strongest classes — but the target is left as published rather than quietly raised after seeing results. |
 | S4 | Inference speed | < 100 ms/image on a T4 GPU | A 200-photo daily walk must process in under one minute to fit a daily reporting cycle. |
 | S5 | Reproducibility | Restart-and-run-all in Colab from this repo | Non-negotiable. A result a third party cannot re-run is not a result. |
 
@@ -54,7 +54,15 @@ Five classes, inherited from the source dataset's annotation schema:
 | 3 | `scaffold` | Erected scaffolding and access towers | Loose tube on the ground, handrail, formwork, ladders | 181 (17.5%) |
 | 4 | `steelbar` | Reinforcement bar — loose, bundled, tied in cages, or cast-in | Structural steel, **scaffold tube**, mesh fencing | 284 (27.4%) |
 
-**The boundary that matters most:** `steelbar` versus `scaffold`. Both are orthogonal steel members and the distinguishing cues — diameter, coupling, whether the structure is erected — are lost at distance. Loose scaffold tube belongs to *neither* class under our rules, which means near-identical objects appear labelled and unlabelled across the dataset. Expect this to dominate the confusion matrix.
+**We predicted the `steelbar`/`scaffold` boundary would dominate the confusion matrix. It did not.** A hosted YOLOv11n cross-check on the same images produced **zero** steelbar/scaffold confusions in either direction, and only one inter-class error in the whole validation set.
+
+What the evidence shows instead:
+
+- **The error mode is missed detections, not mislabelling.** 95 of 103 errors are objects the model never saw; 8 are false positives; 1 is a class confusion.
+- **Instance count does not predict performance.** `brick` has the fewest instances (140) and scores mAP@50 0.844. `steelbar` has the most (284) and scores 0.539, the worst of the five.
+- **Shape predicts performance.** Compact objects with a clear outline — `excavator`, `scaffold`, `brick` stacks — land at 0.84–0.87. Thin, elongated, group-boxed objects — `pvcpipe`, `steelbar` — land at 0.54–0.64, and their mAP@75 collapses to 0.06–0.07, meaning even the detections they do make are badly localised.
+
+That last point traces back to our own labelling rule, *one box per visually separable group*, which is ill-defined for a tangled bundle of bar. The training target is inconsistent, so the model cannot learn the boundary. Full evidence: [`docs/error_analysis.md`](docs/error_analysis.md) §0.
 
 Full label rules, edge cases, the occlusion convention and the accepted ambiguities: [`docs/class_definitions.md`](docs/class_definitions.md).
 

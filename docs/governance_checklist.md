@@ -83,12 +83,18 @@ A false positive here sends a supervisor to check a zone that is fine. Do that r
 
 **One model, two thresholds.** Progress logging runs at a low confidence threshold (recall-favouring). Site-condition alerts run at a high one (precision-favouring). Deploying a single threshold for both would be wrong for at least one of them. The values must be read off the precision-recall curve in `results/curves/BoxPR_curve.png`, not left at the Ultralytics default of 0.25, which was chosen by a library author who knew nothing about this use case.
 
-| Use | Classes | Bias | Proposed threshold | Basis |
+| Use | Classes | Bias | Threshold | Basis |
 |---|---|---|---|---|
-| Progress logging | `steelbar`, `brick`, `pvcpipe` | Recall | `conf = 0.__` | Point where recall on `steelbar` reaches `0.__` |
-| Site-condition alerts | `scaffold`, `excavator` | Precision | `conf = 0.__` | Point where precision on `scaffold` reaches `0.__` |
+| Progress logging | `steelbar`, `brick`, `pvcpipe` | Recall | `0.07 – 0.09` | Per-class optima from the cross-check sweep: `pvcpipe` 0.07, `brick` 0.08, `steelbar` 0.09 |
+| Site-condition alerts | `scaffold`, `excavator` | Precision | `0.06 – 0.11` | `scaffold` 0.06 (precision 1.000), `excavator` 0.11 (precision 0.977) |
 
-> **TODO:** read both values off the PR curve after the training run and record them here. Notebook 02 cell 6.1 sweeps thresholds from 0.10 to 0.75 to make the trade-off visible.
+> **Provisional.** These come from the YOLOv11n cross-check, not the graded YOLOv8 run. Re-read them off `results/curves/BoxPR_curve.png` and notebook 02 cell 6.1 after training and replace these values.
+
+**Two things the measurement changed in this argument.**
+
+*First, the default is badly wrong for this system.* The optimal overall threshold is **0.09**, not Ultralytics' default of 0.25. At 0.25 recall has already fallen to 0.55 and by 0.30 to 0.37 — at the default, more than a third of real objects are being silently dropped. Shipping the default here would have maximised exactly the error the section above identifies as the dangerous one.
+
+*Second, the right unit is the class, not the use case.* Each class has its own operating point, and they do not group neatly by intended use. `scaffold` reaches precision 1.000 at a threshold of 0.06, so for that class a low threshold costs nothing — recall and precision are not in tension at all. The two-threshold framing still holds, because the progress classes and the site-condition classes are disjoint sets, but the honest statement is: **set the threshold per class from the curve, and let the use case decide which way to round when the curve is ambiguous.**
 
 ### Residual risk we accept
 
