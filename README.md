@@ -313,6 +313,30 @@ That is a stronger result than the brief asks for. It means the pipeline is not 
 
 **One section did not run in this verification.** Section 5 downloads the validation split from Roboflow and needs a private API key. The key is entered at runtime via `getpass` and is deliberately not stored anywhere in this repository (governance check 2.5), so the cold-start run was taken with that prompt skipped — the notebook offers this explicitly. The ten validation comparisons in `results/evidence/validation/` come from the earlier run on 2026-09-21T22:37Z. Anyone with a Roboflow key reproduces them by entering it at that prompt; everything else runs without one.
 
+### Cold-start verification of notebook 01 — a full re-train
+
+On **2026-09-22** notebook 01 was opened from GitHub into a fresh Colab runtime and run end to end with *Run all*. This was a complete 30-epoch re-train from the COCO-pretrained checkpoint, not a reload of the released weights: the dataset was re-downloaded from Roboflow, re-split, and trained from scratch on a T4 that had never seen this project.
+
+**Every reported metric came back identical to three decimal places.**
+
+| | Original run (2026-09-21) | Re-train (2026-09-22) |
+|---|---|---|
+| Precision | 0.950 | **0.950** |
+| Recall | 0.884 | **0.884** |
+| mAP@50 | 0.943 | **0.943** |
+| mAP@50–95 | 0.809 | **0.809** |
+| `brick` (P/R/mAP50/mAP50-95) | 0.984 / 1.000 / 0.995 / 0.932 | **identical** |
+| `excavator` | 0.969 / 1.000 / 0.995 / 0.883 | **identical** |
+| `pvcpipe` | 0.986 / 0.930 / 0.964 / 0.835 | **identical** |
+| `scaffold` | 0.955 / 0.875 / 0.979 / 0.858 | **identical** |
+| `steelbar` recall | 0.612 | **0.612** |
+
+All three success criteria passed with the same values: S1 mAP@50 0.943, S2 `steelbar` recall 0.612, S3 `brick` recall 1.000.
+
+**Why it is exact rather than approximate.** `seed=0` is set in the config cell, Ultralytics runs with `deterministic=True` by default, and the dataset version is pinned. Neural-network training is often assumed to be irreproducible; with the seed fixed, the data version pinned and the same accelerator architecture, it is not.
+
+**The bound on that claim.** This is reproducibility on the *same GPU architecture*. Different accelerator hardware (A100, L4, CPU) changes floating-point reduction order and would likely move the last digit or two. The claim here is "same notebook, same pinned inputs, same class of machine, same numbers" — which is what the assignment asks a third party to be able to check.
+
 ### Reproducibility checklist
 
 - [x] **Dataset version:** `yazan-darwish/construction-site-km7bh-fapwu`, version `1`, YOLOv8 export. Forked from [`seungyeon/construction-site-km7bh`](https://universe.roboflow.com/seungyeon/construction-site-km7bh) and re-split.
