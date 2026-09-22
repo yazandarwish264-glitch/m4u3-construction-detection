@@ -296,6 +296,23 @@ VERIFICATION_RUN = False       # set True for the 5-epoch no-GPU fallback — se
 
 Training took **6.4 minutes**, not the 25–45 originally estimated — 700 images at 640 px on a T4 is a small job. The environment is captured verbatim in [`results/pip_freeze.txt`](results/pip_freeze.txt) and the machine-readable run record in [`results/metrics.json`](results/metrics.json).
 
+### Cold-start verification of notebook 02
+
+Notebook 02 was opened from GitHub into a **fresh Colab runtime** on 2026-09-22 and run end to end with *Run all*, on a different T4 session from the one that produced the committed evidence.
+
+Every output file it produced was compared byte-for-byte against the committed version:
+
+| Artefact | Result |
+|---|---|
+| `baseline_comparison.png`, `baseline_new_01..03` | **identical** |
+| `pred_new_01..07.png` | **identical** |
+| `confidence_sweep.png` | **identical** |
+| **Total** | **12 of 12 byte-identical, 0 differing** |
+
+That is a stronger result than the brief asks for. It means the pipeline is not merely re-runnable but **deterministic**: same weights from the Release, same seed, same library versions, same bytes out, on a machine that had never seen this project.
+
+**One section did not run in this verification.** Section 5 downloads the validation split from Roboflow and needs a private API key. The key is entered at runtime via `getpass` and is deliberately not stored anywhere in this repository (governance check 2.5), so the cold-start run was taken with that prompt skipped — the notebook offers this explicitly. The ten validation comparisons in `results/evidence/validation/` come from the earlier run on 2026-09-21T22:37Z. Anyone with a Roboflow key reproduces them by entering it at that prompt; everything else runs without one.
+
 ### Reproducibility checklist
 
 - [x] **Dataset version:** `yazan-darwish/construction-site-km7bh-fapwu`, version `1`, YOLOv8 export. Forked from [`seungyeon/construction-site-km7bh`](https://universe.roboflow.com/seungyeon/construction-site-km7bh) and re-split.
@@ -399,4 +416,10 @@ Both notebooks read this URL from `WEIGHTS_URL` in their config cell; it is alre
 MAICEN0526 — Master in AI for Architecture & Construction, ZIGURAT Institute of Technology / University of Barcelona (IL3).
 Module 4, Unit 3 — Group 6.
 
-> **TODO:** list group member names here.
+- Ahmed Abdelaal
+- Mohammad Abu Alhasan
+- Yazan Abdel Rauof Ahmad Darweesh
+- Clayton Peter Human
+- Tarig Ismail Mohamed Abas
+
+Supervisor: Pablo Aumente Gallego.

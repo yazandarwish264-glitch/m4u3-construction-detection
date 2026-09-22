@@ -36,7 +36,8 @@ REPORTS.mkdir(exist_ok=True)
 TITLE = "Construction Element Detection for Site Progress Verification"
 SUBTITLE = "A cloud-only YOLOv8 pipeline for automated progress evidence"
 COURSE = "MAICEN0526  ·  Module 4 Unit 3  ·  Group 6"
-AUTHORS = "Yazan Darwish  \u00b7  MAICEN0526 Group 6"
+AUTHORS = ("Ahmed Abdelaal  ·  Mohammad Abu Alhasan  ·  Yazan Darweesh  ·  "
+           "Clayton Peter Human  ·  Tarig Ismail Mohamed Abas")
 DATE = "September 2026"
 
 # Overwritten from results/metrics.json when that file exists.
@@ -497,7 +498,9 @@ def build_report():
     y = body(c, SUBTITLE, y, size=10.5, leading=14, color=MUTED)
     y -= 14
     c.setFont(SANS, 8); c.setFillColor(MUTED)
-    c.drawString(RM, y, f"{AUTHORS}   ·   {DATE}   ·   Run {RUN['run_date']}")
+    c.drawString(RM, y, AUTHORS)
+    y -= 11
+    c.drawString(RM, y, f"MAICEN0526 Group 6   ·   {DATE}   ·   Run {RUN['run_date']}")
     y -= 24
 
     y = h(c, "Executive summary", y)
