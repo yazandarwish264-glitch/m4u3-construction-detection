@@ -84,17 +84,16 @@ TAKEAWAYS = [
 ]
 
 LIMITATIONS = [
-    "Reported metrics are inflated by train/validation leakage from near-duplicate frames, "
-    "and the held-out set confirms it independently. They measure memorisation, not generalisation.",
-    "Predictions change class with input resolution. Until that is fixed, imgsz must be "
-    "pinned end to end, and confidence is not comparable across distributions.",
-    "Wide-field and establishing shots fail \u2014 which is how site progress photography is "
-    "actually taken. Validated only on close, subject-filling images.",
-    "No safety function. The model detects no people, no PPE and no hazards. "
-    "Treating it as a safety system would reduce site safety, not improve it.",
-    "Presence only. It cannot measure quantity, spacing, cover or conformance, "
-    "and its detection counts must never enter a payment application.",
-    "Human in the loop is mandatory. Every output is a prompt to look, not a decision.",
+    "Reported metrics are inflated by train/validation leakage; the held-out set confirms it "
+    "independently. They measure memorisation, not generalisation.",
+    "Predictions change class with input resolution, so imgsz must be pinned end to end and "
+    "confidence is not comparable across distributions.",
+    "Wide-field shots fail \u2014 which is how site progress photography is actually taken. "
+    "Validated only on close, subject-filling images.",
+    "No safety function: no people, no PPE, no hazards. Treating it as a safety system would "
+    "reduce site safety, not improve it.",
+    "Presence only \u2014 never quantity, spacing, cover or conformance, and never a payment "
+    "application. A human reviews every output.",
 ]
 
 GCC_NOTE = (
@@ -296,20 +295,21 @@ def build_slides():
 
     # 4 — data
     slide_chrome(c, 4, total, "Data")
-    y = slide_title(c, "A public base, re-split and extended")
+    y = slide_title(c, "A public base, re-split and left alone")
     y -= 6
     y = para(c, "Forked <b>seungyeon/construction-site-km7bh</b> (700 images, CC BY 4.0) into our own "
-                "Roboflow workspace, re-split it 80/20, and added our own images including deliberate "
-                "boundary cases — the things that look like a class and are not.",
+                "Roboflow workspace and re-split it 80/20. We intended to extend it with 25 images "
+                "of our own. We checked their licences first, and then we did not.",
              M, y, SW - 2 * M - 30, size=12.5)
     y -= 20
-    rows = [["Boundary case", "Looks like", "Actually is", "Rule it tests"],
-            ["____", "steelbar", "Loose scaffold tube on the ground", "Belongs to NEITHER class"],
-            ["____", "scaffold", "Ladder, handrail, hoarding frame", "Erected access, not any frame"],
-            ["____", "brick", "Stone cladding, paving block", "Material versus form"],
-            ["____", "pvcpipe", "Metal conduit under dust", "Material when colour fails"],
-            ["____", "excavator", "Wheeled loader, dozer", "Machine type, not yellow plant"]]
-    t = Table(rows, colWidths=[90, 145, 175, 240], rowHeights=[22] + [20] * 5)
+    rows = [["What we sourced", "What happened to it"],
+            ["20 stock-library images", "Watermarked previews, no licence — rejected on licence, "
+                                        "data quality and reproducibility"],
+            ["5 Piqsels images, CC0 1.0", "Cleared, but five images cannot move a 700-image dataset — held in reserve"],
+            ["5 of the rejected 20 were boundary cases",
+             "The class edges they were meant to test went untested"],
+            ["7 first-party photographs", "Held back entirely — never trained on, the only unbiased evidence here"]]
+    t = Table(rows, colWidths=[230, 420], rowHeights=[22] + [30] * 4)
     t.setStyle(TableStyle([
         ("FONT", (0, 0), (-1, 0), SANS_B, 9.5),
         ("FONT", (0, 1), (-1, -1), SANS, 9.5),
@@ -321,9 +321,10 @@ def build_slides():
     ]))
     _, th = t.wrap(0, 0); t.drawOn(c, M, y - th)
     y = y - th - 22
-    para(c, "<b>Why boundary cases matter.</b> A class is defined by its edge, not its centre. "
-            "Without written rules and images that test them, annotation drifts between people "
-            "and the model learns the drift.", M, y, SW - 2 * M, size=11, color=MUTED)
+    para(c, "<b>What the rejection cost, measured.</b> Two of the five lost boundary cases tested "
+            "blockwork against scaffold and conduit against scaffold. Both later appeared as real "
+            "false positives on unseen images (FP-1 and FP-2). The rejection was correct; the gap "
+            "it left is recorded rather than hidden.", M, y, SW - 2 * M, size=11, color=MUTED)
     c.showPage()
 
     # 5 — results
@@ -360,9 +361,10 @@ def build_slides():
     ]))
     _, th = t.wrap(0, 0); t.drawOn(c, M, y - th)
     y = y - th - 18
-    para(c, "<b>Success criteria.</b> S1 overall mAP@50 &ge; 0.50 — <b>____</b>. "
-            "S2 steelbar recall &ge; 0.50 — <b>____</b>. S3 brick recall &ge; 0.40 — <b>____</b>. "
-            "Targets were set before the run and are reported whether met or missed.",
+    para(c, "<b>Success criteria, all met.</b> S1 overall mAP@50 &ge; 0.50 — <b>0.943</b>. "
+            "S2 steelbar recall &ge; 0.50 — <b>0.612</b>. S3 brick recall &ge; 0.40 — <b>1.000</b>. "
+            "Targets were set before the run. Clearing them by this margin is a signal that the "
+            "measurement is wrong, not that the model is excellent — see the next slide.",
          M, y, SW - 2 * M, size=10.5, color=MUTED, leading=14.5)
     c.setFont(SANS, 9); c.setFillColor(MUTED)
     c.drawString(M, 58, f"{RUN['model']}  ·  {RUN['epochs']} epochs  ·  imgsz {RUN['imgsz']}  ·  "
@@ -522,10 +524,10 @@ def build_report():
     left = CW * 0.55
     y_after = body(c,
         "A public dataset, <i>seungyeon/construction-site-km7bh</i> (700 images, CC BY 4.0), was "
-        "forked into our own Roboflow workspace, re-split from 70/20/10 to the required 80/20, and "
-        "extended with our own images — including deliberate boundary cases: the objects that "
-        "resemble a class and are not it. Loose scaffold tube against steelbar, a ladder against "
-        "scaffold, a wheeled loader against excavator. "
+        "forked into our own Roboflow workspace and re-split from 70/20/10 to the required 80/20. "
+        "We added no images of our own: 25 candidates were sourced, 20 were watermarked stock "
+        "previews with no usable licence and were rejected, and 5 were too few to matter. "
+        "Seven first-party photographs are held back entirely as an unbiased test set. "
         "<br/><br/>"
         "Every label follows a written class-definition contract that specifies inclusions, "
         "exclusions, the one-box-per-visually-separable-group rule and a 20-pixel minimum size. "
@@ -598,12 +600,11 @@ def build_report():
 
     y = h(c, "Error analysis and next iteration", y)
     y = body(c,
-        "Three false positives and three false negatives were examined against ground truth and "
-        "documented with filenames and hypotheses in <i>docs/error_analysis.md</i>. Each hypothesis "
-        "is tied to a cause that the data can address — an under-represented class, an object scale "
-        "the source resolution cannot support, or a class boundary left ambiguous in the definition "
-        "contract — rather than to model capacity. Three prioritised dataset improvements follow "
-        "from them, each naming a concrete action and the specific metric it should move.", y)
+        "Three false positives and three false negatives are documented with filenames in "
+        "<i>docs/error_analysis.md</i>. Five of the six are explained by one cause — objects "
+        "recognised at the training set's scale and not at any other — and the sixth by an "
+        "annotation-convention dispute. Three prioritised data improvements follow, each naming "
+        "a concrete action and the metric it should move.", y)
     y -= 14
 
     y = h(c, "Risk: the asymmetry between the two errors", y)
@@ -614,9 +615,8 @@ def build_report():
         "phantom record is contradicted by the next site walk. It costs a wasted verification trip "
         "and is self-correcting."
         "<br/><br/>"
-        "For progress logging, therefore, <b>recall is the priority</b> and the operating threshold "
-        "should be set low. For site-condition alerts the asymmetry reverses: repeated false alarms "
-        "teach supervisors to ignore the system, and an ignored alert is worse than no alert. "
+        "For progress logging, therefore, <b>recall is the priority</b>. For site-condition alerts "
+        "the asymmetry reverses: repeated false alarms teach supervisors to ignore the system. "
         "<b>One model, two thresholds</b> — low for logging, high for alerting — both read off the "
         "precision-recall curve rather than left at the default.", y)
     y -= 14
@@ -634,7 +634,7 @@ def build_report():
     rows = [["Artefact", "Licence", "Owned", "Constraint"],
             ["Code and notebooks", "MIT", "Yes", "None"],
             ["Base dataset", "CC BY 4.0", "No", "Attribution; referenced, not redistributed"],
-            ["Images we added", "CC BY 4.0", "Yes", "Attribution"],
+            ["Held-out test images", "CC BY 4.0", "Yes", "Our own photographs; never trained on"],
             ["Trained weights", "AGPL-3.0", "Derived", "Commercial use needs AGPL compliance or a licence"]]
     t = Table(rows, colWidths=[CW * 0.20, CW * 0.13, CW * 0.10, CW * 0.57],
               rowHeights=[14] + [13.5] * 4)
@@ -650,10 +650,8 @@ def build_report():
     _, th = t.wrap(0, 0); t.drawOn(c, RM, y - th)
     y -= th + 12
 
-    y = body(c, "No class in this model detects, identifies or tracks people — a design decision, "
-                "not an accident. Adding a person or PPE class would move the system into the EU AI "
-                "Act's high-risk employment category and trigger conformity assessment, logging and "
-                "human-oversight obligations. The boundary is one class label away.", y,
+    y = body(c, "No class detects or tracks people — by design: a person or PPE class would make "
+                "this EU AI Act high-risk.", y,
              size=8.6, leading=12, color=MUTED)
 
     c.save()
