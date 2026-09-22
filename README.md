@@ -413,6 +413,7 @@ Both notebooks read this URL from `WEIGHTS_URL` in their config cell; it is alre
 
 | Document | Contents |
 |---|---|
+| [**Team guide — how we built this**](docs/TEAM_GUIDE.md) | Step-by-step replication guide written for someone who has never trained a model or used GitHub. Checklist, plain-language glossary, every trap we hit |
 | [Class definitions](docs/class_definitions.md) | The five classes, inclusion and exclusion rules, occlusion convention |
 | [Error analysis](docs/error_analysis.md) | Three false positives and three false negatives with hypotheses, plus three prioritised dataset improvements |
 | [Governance checklist](docs/governance_checklist.md) | Privacy and consent, data minimisation, limitations statement, false-negative vs false-positive risk |
