@@ -525,16 +525,16 @@ def build_report():
     y_after = body(c,
         "A public dataset, <i>seungyeon/construction-site-km7bh</i> (700 images, CC BY 4.0), was "
         "forked into our own Roboflow workspace and re-split from 70/20/10 to the required 80/20. "
-        "We added no images of our own: 25 candidates were sourced, 20 were watermarked stock "
-        "previews with no usable licence and were rejected, and 5 were too few to matter. "
-        "Seven first-party photographs are held back entirely as an unbiased test set. "
+        "We added nothing: of 25 candidates, 20 were watermarked stock previews with no usable "
+        "licence and 5 were too few to matter. Seven first-party photographs are held back as an "
+        "unbiased test set. "
         "<br/><br/>"
         "Every label follows a written class-definition contract that specifies inclusions, "
         "exclusions, the one-box-per-visually-separable-group rule and a 20-pixel minimum size. "
         "The contract exists because without written rules, annotation drifts between people and "
-        "the model learns the drift rather than the object. SAM-assisted labelling was evaluated: "
-        "it accelerated geometry on isolated objects and failed on grouped and amorphous classes, "
-        "because it automates the drawing and never the judgement.", y, width=left)
+        "the model learns the drift. SAM 3 and GPT-6 Astra were then run on the held-out images: "
+        "both beat our own model on class accuracy, and neither produced output usable against our "
+        "grouping rule.", y, width=left)
 
     rows = [["Dataset images", RUN["dataset_images"]],
             ["Split", RUN["split"]],

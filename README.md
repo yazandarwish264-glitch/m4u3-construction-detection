@@ -376,7 +376,7 @@ Both notebooks read this URL from `WEIGHTS_URL` in their config cell; it is alre
 | [Error analysis](docs/error_analysis.md) | Three false positives and three false negatives with hypotheses, plus three prioritised dataset improvements |
 | [Governance checklist](docs/governance_checklist.md) | Privacy and consent, data minimisation, limitations statement, false-negative vs false-positive risk |
 | [Image provenance](docs/image_provenance.md) | Source and licence for every image outside the base dataset — including the 20 candidates rejected on licence grounds, and why |
-| [SAM exploration](docs/sam_exploration.md) | Where the Segment Anything Model assisted annotation and where it did not |
+| [Foundation-model exploration](docs/sam_exploration.md) | SAM 3 and GPT-6 Astra run on the same held-out images. Both beat our trained model on class accuracy; neither produced output usable against our grouping contract |
 | [Slides (PDF)](reports/slides.pdf) | 8-slide summary |
 | [Mini report (PDF)](reports/mini_report.pdf) | 2-page executive summary, results and limitations |
 
@@ -386,7 +386,7 @@ Both notebooks read this URL from `WEIGHTS_URL` in their config cell; it is alre
 
 **Code and notebooks in this repository:** MIT Licence — see [`LICENSE`](LICENSE). Free to use, modify and redistribute with attribution.
 
-**Dataset:** *not owned by this project.* The base dataset is published on Roboflow Universe as [`seungyeon/construction-site-km7bh`](https://universe.roboflow.com/seungyeon/construction-site-km7bh) under **CC BY 4.0**. It is used here under that licence, with attribution. Our fork re-splits it and adds our own images; it is not redistributed in this repository, and the notebook downloads it from our Roboflow project at runtime. Anyone reusing this work must credit the original dataset authors.
+**Dataset:** *not owned by this project.* The base dataset is published on Roboflow Universe as [`seungyeon/construction-site-km7bh`](https://universe.roboflow.com/seungyeon/construction-site-km7bh) under **CC BY 4.0**. It is used here under that licence, with attribution. Our fork re-splits it and adds nothing to it (see §3 and [`docs/image_provenance.md`](docs/image_provenance.md) §A); it is not redistributed in this repository, and the notebook downloads it from our Roboflow project at runtime. Anyone reusing this work must credit the original dataset authors.
 
 **Trained weights:** derived from a CC BY 4.0 dataset and from Ultralytics YOLOv8, which is distributed under **AGPL-3.0**. The weights are released for academic and evaluation purposes. Any commercial deployment of a YOLOv8-derived model requires either compliance with AGPL-3.0 or an Ultralytics commercial licence. This is a real constraint, not a formality.
 
