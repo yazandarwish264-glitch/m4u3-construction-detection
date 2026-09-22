@@ -197,16 +197,34 @@ Recorded rather than resolved, because resolving them needs a decision the image
 | Group boxes vs individual boxes | The "visually separable group" rule is inherently subjective | Inconsistent instance counts, depressing recall |
 | `excavator` vs other tracked plant | Dozers and loaders share silhouette features at distance | False positives on class 1 |
 
+### Added at v1.1 — the two that actually happened
+
+Everything above was written in advance. Neither of the following was, and both were observed on held-out images. They are listed separately so the record shows which predictions we got right and which we missed.
+
+| Ambiguity | Why the model confuses them | Error observed |
+|---|---|---|
+| **`brick` wall vs `scaffold`** | At the resolution the model sees, a coursed blockwork wall and a scaffold frame are both a repeating orthogonal grid. The distinguishing cue — scaffold is an open frame you can see through — is fine texture, and downsampling destroys it | **FP-1:** a rendered blockwork wall predicted `scaffold` at **0.778**, the highest-confidence error in the whole evaluation. At `imgsz=2560` the same image returns `brick` |
+| **`pvcpipe` run vs `scaffold`** | Both are long straight pale tubes running parallel and crossing at angles. Bounding boxes carry no scale information, and no training image contains both, so nothing teaches the model that one is metres across and the other centimetres | **FP-2:** a PVC conduit run on a soffit predicted `scaffold` at 0.279, and `steelbar` at higher resolutions — never `pvcpipe` |
+
+**The lesson for the contract.** Our ambiguity list was built from what looks similar *to a person standing on site*. The model's confusions are built from what looks similar *after downsampling to 640 px*. Those are different similarity spaces, and only the second one produces errors. A class-definition contract written for human annotators does not automatically anticipate machine confusions — the pairs have to be measured, not imagined.
+
 ---
 
 ## 7 — Review record
 
 | Version | Date | Change | Reviewed by |
 |---|---|---|---|
-| 1.0 | 2026-09-21 | Rules drafted against the forked dataset's five classes | `____` |
-| 1.1 | `____-__-__` | §6 extended after the first annotation round | `____` |
+| 1.0 | 2026-09-21 | Rules drafted against the forked dataset's five classes | Yazan Darwish |
+| 1.1 | 2026-09-22 | §6 extended after the held-out evaluation, once the real confusions were known | Yazan Darwish |
 
-**Swap test result:** `____` — *record it: two annotators labelled the same 10 held-out images using only this document; agreement was __%. Disagreements were on __.*
+**Swap test result: not performed.** The test this document opens with — could someone who has never met this team annotate consistently using only these rules? — was never run, because no images were annotated by a second person. That is a gap, and it is stated rather than papered over.
+
+What we have instead is weaker but real. The rules were written against the inherited annotations, and two of their predictions were checked against measured behaviour:
+
+- **Predicted and wrong.** We expected `steelbar`/`scaffold` to dominate the confusion matrix, because our rules put loose scaffold tube in neither class. There is not one such confusion in the validation set ([`error_analysis.md`](error_analysis.md), Finding 1).
+- **Not predicted, and it happened.** Blockwork was called `scaffold` at 0.78 and PVC conduit was called `scaffold` at 0.28 on unseen images (FP-1, FP-2). Neither pair is discussed in §6.
+
+So the contract is internally consistent but was written against the wrong edges. §6 has been extended accordingly. A genuine swap test with a second annotator remains the correct next step.
 
 ---
 

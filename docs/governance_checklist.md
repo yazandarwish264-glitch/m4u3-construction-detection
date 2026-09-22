@@ -3,7 +3,7 @@
 **System:** Construction element detection for site progress verification (YOLOv8)
 **Status:** Academic prototype. Not deployed. Not cleared for use on a live project.
 **Owner:** MAICEN0526 Group 6
-**Last reviewed:** `____-__-__`
+**Last reviewed:** 2026-09-22, after the held-out evaluation
 
 ---
 
