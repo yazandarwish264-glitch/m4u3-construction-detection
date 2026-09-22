@@ -39,6 +39,7 @@ COURSE = "MAICEN0526  ·  Module 4 Unit 3  ·  Group 6"
 AUTHORS = ("Ahmed Abdelaal  ·  Mohammad Abu Alhasan  ·  Yazan Darweesh  ·  "
            "Clayton Peter Human  ·  Tarig Ismail Mohamed Abas")
 DATE = "September 2026"
+REPO_URL = "github.com/yazandarwish264-glitch/m4u3-construction-detection"
 
 # Overwritten from results/metrics.json when that file exists.
 METRICS = {
@@ -228,6 +229,8 @@ def build_slides():
     y = para(c, SUBTITLE, M, y, SW - 2 * M - 120, size=15, color=MUTED)
     c.setStrokeColor(RULE); c.setLineWidth(0.5)
     c.line(M, 120, SW - M, 120)
+    c.setFont(SANS_B, 11); c.setFillColor(ACCENT)
+    c.drawString(M, 148, "Repository:  " + REPO_URL)
     c.setFont(SANS, 10); c.setFillColor(MUTED)
     c.drawString(M, 100, COURSE)
     c.drawString(M, 84, f"{AUTHORS}   ·   {DATE}")
@@ -501,6 +504,9 @@ def build_report():
     c.drawString(RM, y, AUTHORS)
     y -= 11
     c.drawString(RM, y, f"MAICEN0526 Group 6   ·   {DATE}   ·   Run {RUN['run_date']}")
+    y -= 13
+    c.setFont(SANS_B, 8.5); c.setFillColor(ACCENT)
+    c.drawString(RM, y, "Repository:  " + REPO_URL)
     y -= 24
 
     y = h(c, "Executive summary", y)
