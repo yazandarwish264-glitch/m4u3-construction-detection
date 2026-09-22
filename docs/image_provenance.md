@@ -100,15 +100,15 @@ The brief asks for five. We use seven because unbiased test images are the scarc
 
 | File | Location | What is in it | Classes | Role |
 |---|---|---|---|---|
-| `new_01.jpg` | `____` | Core wall under construction, rebar starters, timber formwork | `steelbar` | The weakest class, clear conditions |
-| `new_02.jpg` | `____` | Retaining wall, rebar starters, concrete pump boom, stacked timber | `steelbar`, plant | Weak class under clutter |
-| `new_03.jpg` | `____` | Excavation with tracked excavator, surrounding buildings | `excavator` | **Control** |
+| `new_01.jpg` | **Amman, Jordan** | Core wall under construction, rebar starters, timber formwork, concrete pump | `steelbar` | The weakest class, clear conditions |
+| `new_02.jpg` | **Amman, Jordan** | Retaining wall, rebar starters, concrete pump boom, stacked timber | `steelbar`, plant | Weak class under clutter |
+| `new_03.jpg` | **Amman, Jordan** | Excavation with tracked excavator, surrounding buildings | `excavator` | **Control** |
 | `new_04.jpg` | **Irbid, Jordan** | Blockwork wall with rebar starters, stacked concrete blocks | `brick`, `steelbar` | **Control** — taken while building our own home |
 | `new_05.jpg` | **Irbid, Jordan** | PVC conduit run on a concrete soffit with junction box | `pvcpipe` | Only close-range MEP image — taken while building our own home |
-| `new_06.jpg` | `____` | Large deck project, shoring and tower crane, distant | `scaffold` | **Hard case** — small objects at range |
-| `new_07.jpg` | `____` | Formwork panels and timber stacks beside a building | few / none | **Hard case** — mostly objects outside our schema |
+| `new_06.jpg` | **Nashville, USA** | Large deck project, shoring and tower crane, overcast, seen from across the site | `scaffold` | **Hard case** — small objects at range |
+| `new_07.jpg` | **Amman, Jordan** | Large stacks of rebar mesh panels and plywood formwork beside a concrete frame | `steelbar` (abundant), formwork | **Hard case** — mid-range, densely stacked |
 
-> **TODO:** fill the remaining `____` location cells. The set spans Amman, Irbid, Nashville and New York — record which is which.
+**Correction, recorded rather than silently fixed.** `new_07` was originally logged in this register as containing "few or none" of our classes and was selected as a false-positive probe. That was wrong: the image is dominated by stacked reinforcement mesh, which is `steelbar` under our contract. The model returned **nothing** on it at every confidence threshold from 0.25 down to 0.02 and at every input resolution from 640 to 2560. It is therefore one of the strongest false negatives in the set, not a probe. The mistake was ours in cataloguing, and it is worth noting that a human skim of the image made the same error the register did.
 
 **Held back, not committed:**
 
@@ -126,7 +126,7 @@ The brief asks for five. We use seven because unbiased test images are the scarc
 
 ### What this set does and does not establish
 
-**Does:** it spans **four cities on two continents** — Amman, Irbid, Nashville and New York. That is a harder generalisation test than a single site, because it varies construction method, materials, plant and light all at once. Two of the seven are from the authors' own house build in Irbid, which is about as unambiguous as provenance gets.
+**Does:** it spans **three cities on two continents** — Amman and Irbid in Jordan, and Nashville in the United States. That is a harder generalisation test than a single site, because it varies construction method, materials, plant and light all at once. Two of the seven are from the authors' own house build in Irbid, which is about as unambiguous as provenance gets. Six of the seven are **GCC-adjacent Levantine sites**, which is materially closer to the stated use case than the base dataset is.
 
 **Does not:** seven images is a qualitative probe, not a statistical estimate. It can show that a class fails on unseen data; it cannot tell you how often. Any claim of the form "the model achieves X on new sites" is unsupported by a set this size.
 

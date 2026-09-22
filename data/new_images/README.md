@@ -20,9 +20,11 @@ They are also the only images here that we hold outright: the training dataset i
 | `new_04.jpg` | `brick` + `steelbar` — blockwork wall with starters | **Control**, and the only image with both |
 | `new_05.jpg` | `pvcpipe` — conduit run on a soffit with junction box | Only close-range MEP image in the set |
 | `new_06.jpg` | `scaffold` — shoring and tower crane, distant | **Hard case**: small objects at range |
-| `new_07.jpg` | Few or none — formwork panels and timber stacks | **Hard case**: mostly objects outside our schema, so a good false-positive probe |
+| `new_07.jpg` | `steelbar` — large stacks of rebar mesh panels, plus plywood formwork | **Hard case**: dense stacking at mid range |
 
-Locations span Amman, Irbid, Nashville and New York. Two are from the authors' own house build in Irbid.
+Locations: `new_01`, `new_02`, `new_03`, `new_07` in Amman; `new_04` and `new_05` in Irbid, from the authors' own house build; `new_06` in Nashville.
+
+> **`new_07` was mis-catalogued at first** as containing few or none of our classes, and selected as a false-positive probe. It is in fact dominated by reinforcement mesh. The model returns nothing on it at any threshold or resolution, which makes it one of the strongest false negatives here. Correction recorded in [`../../docs/image_provenance.md`](../../docs/image_provenance.md) §B.
 
 ### Why `brick` and `excavator` are the controls
 
