@@ -5,7 +5,14 @@ A YOLOv8 object-detection pipeline that identifies construction elements and pla
 
 Everything in this repository runs in Google Colab. No local installation is required.
 
-> **Want to re-run this yourself?** Go to [§5, How to reproduce](#5-how-to-reproduce) — both notebooks open straight from this repository into Google Colab and need nothing installed locally.
+### Run it now — no account, no key, no setup
+
+| Notebook | Open | What it does |
+|---|---|---|
+| **01 — Training and evaluation** | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yazandarwish264-glitch/m4u3-construction-detection/blob/main/notebooks/01_training_eval.ipynb) | Downloads the frozen dataset, trains 30 epochs, evaluates, saves curves |
+| **02 — Baseline inference and evidence** | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yazandarwish264-glitch/m4u3-construction-detection/blob/main/notebooks/02_baseline_inference.ipynb) | Loads the released weights, runs inference, builds the evidence pack |
+
+Open either badge, then **Runtime → Disconnect and delete runtime → Run all**. Both notebooks run top to bottom with **no Roboflow account, no API key and no Colab Secrets** — the dataset is a checksum-verified GitHub Release asset (§3).
 
 ---
 
@@ -69,7 +76,26 @@ Full label rules, edge cases, the occlusion convention and the accepted ambiguit
 
 ## 3. Dataset
 
-A public dataset **forked into our own Roboflow workspace**, re-split, and extended with our own images and boundary cases. The fork is deliberate: the unit requires a cloud-hosted Roboflow project under our own control, and a pure reference to somebody else's dataset would not let us re-split it, add boundary cases, or test our own class definitions against it.
+A public dataset **forked into our own Roboflow workspace** and re-split. The fork is deliberate: the unit requires a cloud-hosted Roboflow project under our own control, and a pure reference to somebody else's dataset would not let us re-split it or test our own class definitions against it.
+
+**The dataset both notebooks actually read is a frozen zip published as a GitHub Release asset — no Roboflow account, no API key, no Colab Secrets.** Roboflow remains the annotation and versioning tool; it is not a dependency of the results.
+
+### The frozen dataset — keyless and checksum-verified
+
+| Field | Value |
+|---|---|
+| File | `construction-site-v1-yolo11.zip` |
+| URL | [`releases/download/v1.0/construction-site-v1-yolo11.zip`](https://github.com/yazandarwish264-glitch/m4u3-construction-detection/releases/download/v1.0/construction-site-v1-yolo11.zip) |
+| Size | 64,478,143 bytes (61.5 MB) |
+| **SHA-256** | `26b21198babe59ebb03c5fc43fee4d956690dfebb1802bb6325f219b234dcb4e` |
+| Format | YOLOv11 (Ultralytics YOLO txt — identical layout to the YOLOv8 export) |
+| Contents | 560 train images + 560 labels · 140 valid images + 140 labels · `data.yaml` |
+| Classes | `brick`, `excavator`, `pvcpipe`, `scaffold`, `steelbar` |
+| Licence | CC BY 4.0, inherited from and attributed to the source dataset |
+
+Both notebooks download this file, **verify the SHA-256 before using it**, and stop rather than train on a file that does not match. The checksum is what makes "this is the data we trained on" a checkable claim instead of an assertion.
+
+The zip is a release asset, not a committed file — it is never in git history.
 
 ### Our Roboflow project — live
 
@@ -104,7 +130,7 @@ RF_VERSION   = 1
 
 **On the re-split.** The source ships 70/20/10. The assignment requires 80/20, so we rebalanced to 560/140/0 — moving 70 images out of the test split and into training, and leaving validation untouched at 140. Validation membership is therefore identical to the source's, which means the split change did not leak any previously-held-out image into the set we report on.
 
-**The cost of that, stated plainly:** there is now no untouched test set. Every number in §4 comes from the validation set, which is also the set we will inspect while writing the error analysis. That makes the reported metrics a *development* estimate, not an unbiased generalisation estimate. This is exactly why the five unseen images in `data/new_images/` matter — they are the only genuinely held-out evidence in this project, and they should be weighted accordingly.
+**The cost of that, stated plainly:** there is now no untouched test set. Every number in §4 comes from the validation set, which is also the set we will inspect while writing the error analysis. That makes the reported metrics a *development* estimate, not an unbiased generalisation estimate. This is exactly why the seven unseen images in `data/new_images/` matter — they are the only genuinely held-out evidence in this project, and they should be weighted accordingly.
 
 ### Augmentation: deliberately off
 
@@ -125,7 +151,7 @@ We sourced 25 candidate images to extend the dataset and added **none of them**.
 
 The assignment brief does not require dataset expansion, so nothing in the rubric depends on this. What it did cost is measurable and is recorded rather than hidden: two of the five rejected boundary cases targeted the exact confusions that later appeared as FP-1 and FP-2 in [`docs/error_analysis.md`](docs/error_analysis.md).
 
-The dataset is **not** committed to this repository. The training notebook downloads it at runtime from Roboflow using your own API key, which keeps credentials out of version control and the repo small. See §5.
+The dataset is **not** committed to this repository. Both notebooks download the frozen zip from the GitHub Release at runtime and verify its SHA-256, which keeps the repository small and keeps credentials out of the picture entirely. See §3 and §5.
 
 ---
 
@@ -228,19 +254,19 @@ Curves and confusion matrix: [`results/curves/`](results/curves/) · Prediction 
 
 Two notebooks, run in order. Both open directly in Colab from this repository.
 
-### Before you start: get a Roboflow API key (one minute, free)
+### Before you start: nothing
 
-1. Create a free account at [roboflow.com](https://roboflow.com).
-2. Go to **Settings → API Keys** and copy your **Private API Key**.
-3. Keep it to hand. The notebook will prompt you for it and hide it as you type. **Never paste it into a code cell and never commit it.**
+No account, no API key, no Colab Secrets. The dataset is a checksum-verified GitHub Release asset (§3) and the weights are another (§7). Both notebooks run top to bottom in a fresh runtime on their own.
+
+A Roboflow key is needed only if you want the **optional** §5.2 cell in notebook 01, which re-downloads the same data from Roboflow instead. That cell is a no-op when the keyless dataset is already present, so *Run all* never reaches it. If you do use it, the notebook takes the key through `getpass` or Colab Secrets — **never paste a key into a code cell and never commit one.**
 
 ### Notebook 1 — Training and evaluation
 
 **Open:** `notebooks/01_training_eval.ipynb` → in GitHub, click the *Open in Colab* badge at the top of the notebook.
 
 1. **Runtime → Change runtime type → T4 GPU → Save.** Confirm the GPU is live: cell 2 prints the device name. If it prints `CPU`, stop and change the runtime — training on CPU will not finish.
-2. **Runtime → Restart session and run all.**
-3. When prompted, paste your Roboflow API key and press Enter.
+2. **Runtime → Disconnect and delete runtime**, then **Run all**. Nothing will prompt you.
+3. The dataset downloads from the Release and its SHA-256 is checked before training starts.
 4. Wait. Expected runtime is given in §6.
 5. The notebook prints a metrics table, writes curves to `results/curves/`, and zips the trained weights for download.
 6. **Download `best.pt`** when the last cell offers it, and attach it to a GitHub Release (see §7).
@@ -311,7 +337,7 @@ Every output file it produced was compared byte-for-byte against the committed v
 
 That is a stronger result than the brief asks for. It means the pipeline is not merely re-runnable but **deterministic**: same weights from the Release, same seed, same library versions, same bytes out, on a machine that had never seen this project.
 
-**One section did not run in this verification.** Section 5 downloads the validation split from Roboflow and needs a private API key. The key is entered at runtime via `getpass` and is deliberately not stored anywhere in this repository (governance check 2.5), so the cold-start run was taken with that prompt skipped — the notebook offers this explicitly. The ten validation comparisons in `results/evidence/validation/` come from the earlier run on 2026-09-21T22:37Z. Anyone with a Roboflow key reproduces them by entering it at that prompt; everything else runs without one.
+**One caveat on both cold-start runs, stated rather than glossed.** At the time they were taken, the dataset still came from Roboflow behind a private API key, so both runs used the owner's own credential. The machine was fresh; the credential was not. That gap was found by a group member who could not run the notebook with his own key — which is precisely the test the owner cannot perform. It is now closed: the dataset is a public, checksum-verified Release asset and neither notebook asks for a credential at all.
 
 ### Cold-start verification of notebook 01 — a full re-train
 
