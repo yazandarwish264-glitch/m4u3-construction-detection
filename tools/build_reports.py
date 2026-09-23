@@ -299,21 +299,20 @@ def build_slides():
 
     # 4 — data
     slide_chrome(c, 4, total, "Data")
-    y = slide_title(c, "A public base, re-split and left alone")
+    y = slide_title(c, "A public base, re-split for the task")
     y -= 6
     y = para(c, "Forked <b>seungyeon/construction-site-km7bh</b> (700 images, CC BY 4.0) into our own "
-                "Roboflow workspace and re-split it 80/20. We intended to extend it with 25 images "
-                "of our own. We checked their licences first, and then we did not.",
+                "Roboflow workspace and re-split it to the required 80/20. Used as published, with "
+                "no images added. Seven photographs of our own are held back entirely.",
              M, y, SW - 2 * M - 30, size=12.5)
     y -= 20
-    rows = [["What we sourced", "What happened to it"],
-            ["20 stock-library images", "Watermarked previews, no licence — rejected on licence, "
-                                        "data quality and reproducibility"],
-            ["5 Piqsels images, CC0 1.0", "Cleared, but five images cannot move a 700-image dataset — held in reserve"],
-            ["5 of the rejected 20 were boundary cases",
-             "The class edges they were meant to test went untested"],
-            ["7 first-party photographs", "Held back entirely — never trained on, the only unbiased evidence here"]]
-    t = Table(rows, colWidths=[230, 420], rowHeights=[22] + [30] * 4)
+    rows = [["Dataset", "As used in this project"],
+            ["Source", "seungyeon/construction-site-km7bh — CC BY 4.0, referenced not redistributed"],
+            ["Images", "700, all annotated, five classes"],
+            ["Split", "560 train / 140 validation (80 / 20), re-split from the source's 70/20/10"],
+            ["Preprocessing", "Resize to 640 x 640. No augmentation"],
+            ["Held out entirely", "7 first-party photographs, never uploaded and never trained on"]]
+    t = Table(rows, colWidths=[230, 420], rowHeights=[22] + [30] * 5)
     t.setStyle(TableStyle([
         ("FONT", (0, 0), (-1, 0), SANS_B, 9.5),
         ("FONT", (0, 1), (-1, -1), SANS, 9.5),
@@ -325,10 +324,12 @@ def build_slides():
     ]))
     _, th = t.wrap(0, 0); t.drawOn(c, M, y - th)
     y = y - th - 22
-    para(c, "<b>What the rejection cost, measured.</b> Two of the five lost boundary cases tested "
-            "blockwork against scaffold and conduit against scaffold. Both later appeared as real "
-            "false positives on unseen images (FP-1 and FP-2). The rejection was correct; the gap "
-            "it left is recorded rather than hidden.", M, y, SW - 2 * M, size=11, color=MUTED)
+    para(c, "<b>Two decisions that shape everything after this slide.</b> Augmentation is off, so the "
+            "baseline shows what the data does rather than what augmentation hides. And the split is "
+            "random over images — but this dataset is built from sequential site photographs, so "
+            "near-identical frames land on both sides of it. That is why the score on the next slide "
+            "is not a generalisation estimate, and why the seven held-out photographs exist.",
+         M, y, SW - 2 * M, size=11, color=MUTED)
     c.showPage()
 
     # 5 — results
