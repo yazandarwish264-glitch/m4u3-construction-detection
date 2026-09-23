@@ -32,10 +32,12 @@ Before the graded run, we trained a **YOLOv11n** on the same images (version 2, 
 
 | Overall (validation, 140 images) | |
 |---|---|
-| mAP@50 | 0.635 |
-| mAP@50–95 | 0.328 |
-| Precision | 0.547 |
-| Recall | 0.653 |
+| mAP@50 | 0.748 |
+| mAP@50–95 | 0.349 |
+| Precision | 0.700 |
+| Recall | 0.760 |
+
+> **Corrected 2026-09-23.** This table previously read mAP@50 0.635, mAP@50–95 0.328, precision 0.547, recall 0.653. Those were wrong — 0.635 was the `pvcpipe` row (0.637) misread as the overall. The figures above are Roboflow's own evaluation of the run, verifiable on the [public project page](https://universe.roboflow.com/yazan-darwish/construction-site-km7bh-fapwu) now that the dataset is published. The per-class table below was correct throughout, and its five mAP@50 values average to 0.748, which is what exposed the error. **No finding in this document depended on the overall row** — every conclusion rests on per-class ranking, which is unchanged.
 
 ### Per class
 
@@ -111,7 +113,7 @@ At the default, **more than a third of real objects are already being dropped**.
 
 ### Outcome — the graded run has now happened
 
-The YOLOv8s run on version 1 landed at **mAP@50 0.943**, far above the cross-check's 0.635. Both are inflated by the same cause: near-duplicate frames split across train and validation (evidence in README §4.1). The comparison is still useful for **ranking**, because both runs are equally advantaged.
+The YOLOv8s run on version 1 landed at **mAP@50 0.943**, far above the cross-check's 0.748. Both are inflated by the same cause: near-duplicate frames split across train and validation (evidence in README §4.1). The comparison is still useful for **ranking**, because both runs are equally advantaged.
 
 | Class | YOLOv8s (graded, v1) | YOLOv11n (cross-check, v2) | Agreement |
 |---|---|---|---|

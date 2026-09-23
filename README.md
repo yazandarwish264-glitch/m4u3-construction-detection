@@ -5,7 +5,7 @@ A YOLOv8 object-detection pipeline that identifies construction elements and pla
 
 Everything in this repository runs in Google Colab. No local installation is required.
 
-> **Building this for the first time?** Start with [`DO_THIS_NEXT.md`](DO_THIS_NEXT.md) — what is already done, what is outstanding, and the exact order to do it in.
+> **Building this for the first time?** Start with [`docs/TEAM_GUIDE.md`](docs/TEAM_GUIDE.md) — a step-by-step replication guide written for someone who has never trained a model or used GitHub, with a checklist, a plain-language glossary, and every trap we hit.
 
 ---
 
@@ -379,17 +379,18 @@ Both notebooks read this URL from `WEIGHTS_URL` in their config cell; it is alre
 ```
 .
 ├── README.md                     ← you are here
-├── DO_THIS_NEXT.md               ← remaining steps, in order
 ├── LICENSE                       ← MIT, code only
 ├── requirements.txt              ← pinned versions
 ├── notebooks/
 │   ├── 01_training_eval.ipynb    ← train, evaluate, export curves
 │   └── 02_baseline_inference.ipynb ← load weights, run inference, build evidence pack
 ├── docs/
+│   ├── TEAM_GUIDE.md             ← how to replicate this from scratch, start here
 │   ├── class_definitions.md      ← the five classes and their label rules
 │   ├── error_analysis.md         ← 3 FP + 3 FN + 3 prioritised data improvements
 │   ├── governance_checklist.md   ← privacy, minimisation, limitations, risk
-│   └── sam_exploration.md        ← what SAM helped with and what it did not
+│   ├── image_provenance.md       ← source and licence for every image we added
+│   └── sam_exploration.md        ← SAM 3 and GPT-6 Astra vs our trained model
 ├── results/
 │   ├── curves/                   ← training curves, PR curve, confusion matrix
 │   ├── evidence/
