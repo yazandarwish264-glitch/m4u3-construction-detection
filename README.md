@@ -463,6 +463,7 @@ Both notebooks read this URL from `WEIGHTS_URL` in their config cell; it is alre
 .
 ├── README.md                     ← you are here
 ├── LICENSE                       ← MIT, code only
+├── DATASET_ATTRIBUTION.md         ← CC BY 4.0 credit for the redistributed dataset
 ├── requirements.txt              ← pinned versions
 ├── notebooks/
 │   ├── 01_training_eval.ipynb    ← train, evaluate, export curves
@@ -510,7 +511,7 @@ Both notebooks read this URL from `WEIGHTS_URL` in their config cell; it is alre
 
 **Code and notebooks in this repository:** MIT Licence — see [`LICENSE`](LICENSE). Free to use, modify and redistribute with attribution.
 
-**Dataset:** *not owned by this project.* The base dataset is published on Roboflow Universe as [`seungyeon/construction-site-km7bh`](https://universe.roboflow.com/seungyeon/construction-site-km7bh) under **CC BY 4.0**. It is used here under that licence, with attribution. Our fork re-splits it and adds nothing to it (see §3 and [`docs/image_provenance.md`](docs/image_provenance.md) §A); it is not redistributed in this repository, and the notebook downloads it from our Roboflow project at runtime. Anyone reusing this work must credit the original dataset authors.
+**Dataset:** *not owned by this project.* The base dataset is published on Roboflow Universe as [`seungyeon/construction-site-km7bh`](https://universe.roboflow.com/seungyeon/construction-site-km7bh) under **CC BY 4.0**. It is used here under that licence, with attribution. Our fork re-splits it and adds nothing to it (see §3 and [`docs/image_provenance.md`](docs/image_provenance.md) §A); it **is** redistributed here, as the frozen zip attached to Release `v1.0`, which is what lets both notebooks run without a credential. CC BY 4.0 permits redistribution provided credit is given and the changes are indicated; both are recorded in [`DATASET_ATTRIBUTION.md`](DATASET_ATTRIBUTION.md). Anyone reusing this work must credit the original dataset authors.
 
 **Trained weights:** derived from a CC BY 4.0 dataset and from Ultralytics YOLOv8, which is distributed under **AGPL-3.0**. The weights are released for academic and evaluation purposes. Any commercial deployment of a YOLOv8-derived model requires either compliance with AGPL-3.0 or an Ultralytics commercial licence. This is a real constraint, not a formality.
 

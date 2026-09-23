@@ -6,7 +6,7 @@ Every image in this project that did not come from the base dataset, with its so
 
 | Group | Count | Status |
 |---|---|---|
-| Base dataset images | 700 | Public, CC BY 4.0, used by reference — not ours, not redistributed |
+| Base dataset images | 700 | Public, CC BY 4.0 — not ours; redistributed as the Release `v1.0` asset, with attribution |
 | Candidate images sourced to expand the dataset | 25 | **20 rejected on licence grounds, 5 cleared and held in reserve. None added.** |
 | Held-out test images | 7 | First-party photographs. In the repo, never trained on |
 

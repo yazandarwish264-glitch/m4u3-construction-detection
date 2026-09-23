@@ -32,7 +32,7 @@ Site photography is people photography. A construction site is a workplace, and 
 | 2.1 | Only the five classes required by the stated use case are annotated. No speculative extra classes "in case they are useful later". | ☑ | |
 | 2.2 | No people are annotated, even where visible in frame. | ☑ | |
 | 2.3 | Images are stored at the resolution needed for detection, not the camera's maximum. | ☑ | Version 1 resizes to 640×640; training at 640. |
-| 2.4 | The dataset is not redistributed in this repository. It is referenced and downloaded at runtime. | ☑ | Reduces copies of the data in circulation. |
+| 2.4 | The dataset is redistributed only as a frozen Release asset, under a licence that permits it, with attribution. | ☑ | CC BY 4.0 allows redistribution with credit and an indication of changes; both are in [`../DATASET_ATTRIBUTION.md`](../DATASET_ATTRIBUTION.md). The zip is a release asset and is never committed to git. |
 | 2.5 | No credential is required to reproduce the results, and none is committed. | ☑ | Both notebooks read the dataset from a checksum-verified public Release asset. No key appears in any notebook, config file or commit. |
 | 2.6 | Trained weights are released as a build artefact, not committed to git history. | ☑ | Weights cannot be removed from git history once committed. |
 | 2.7 | A retention period is defined for any images collected in a future pilot. | ☐ | Proposed: raw site images deleted 90 days after the progress record is created; detection records retained for the project's defects liability period. |
@@ -124,10 +124,10 @@ Even at the correct thresholds, this model will miss objects and invent objects.
 |---|---|---|
 | 5.1 | Dataset source, version and licence are stated in the README | ☑ |
 | 5.2 | Model variant, epochs, batch, image size and seed are documented | ☑ |
-| 5.3 | Metrics are reported in full, including the classes that perform badly | ☐ |
-| 5.4 | Failure cases are published, not just successes — see [`error_analysis.md`](error_analysis.md) | ☐ |
-| 5.5 | Run environment and date are recorded so results can be re-checked | ☐ |
-| 5.6 | Anyone can re-run the pipeline from this repository without contacting the authors | ☐ |
+| 5.3 | Metrics are reported in full, including the classes that perform badly | ☑ |
+| 5.4 | Failure cases are published, not just successes — see [`error_analysis.md`](error_analysis.md) | ☑ |
+| 5.5 | Run environment and date are recorded so results can be re-checked | ☑ |
+| 5.6 | Anyone can re-run the pipeline from this repository without contacting the authors | ☑ |
 
 **Not published:** our Roboflow API keys, and any raw site image for which we do not hold redistribution rights.
 
@@ -137,7 +137,7 @@ Even at the correct thresholds, this model will miss objects and invent objects.
 
 **Code and notebooks.** MIT Licence — see [`../LICENSE`](../LICENSE). Permissive; reuse with attribution.
 
-**Dataset.** *Public, licensed — not owned by us.* The base dataset [`seungyeon/construction-site-km7bh`](https://universe.roboflow.com/seungyeon/construction-site-km7bh) is published on Roboflow Universe under **CC BY 4.0**. We use it under that licence with attribution and do not redistribute it here. **We added no images of our own to it** — see [`image_provenance.md`](image_provenance.md) §A for the candidates we sourced and why they were rejected — so the training dataset is wholly CC BY 4.0 with a single upstream attribution. Anyone reusing this work must credit the original dataset authors.
+**Dataset.** *Public, licensed — not owned by us.* The base dataset [`seungyeon/construction-site-km7bh`](https://universe.roboflow.com/seungyeon/construction-site-km7bh) is published on Roboflow Universe under **CC BY 4.0**. We use it under that licence with attribution, and **we do redistribute it** — as a frozen zip attached to Release `v1.0`, because a keyless, checksum-verified copy is what makes the results reproducible by a third party. CC BY 4.0 permits this provided credit is given and changes are indicated; both are recorded in [`../DATASET_ATTRIBUTION.md`](../DATASET_ATTRIBUTION.md). **We added no images of our own to it** — see [`image_provenance.md`](image_provenance.md) §A for the candidates we sourced and why they were rejected — so the training dataset is wholly CC BY 4.0 with a single upstream attribution. Anyone reusing this work must credit the original dataset authors.
 
 **Held-out test images.** The seven images in `data/new_images/` are our own photographs, released with this repository under **CC BY 4.0**. They are not part of the dataset and were never trained on.
 
@@ -149,7 +149,7 @@ Even at the correct thresholds, this model will miss objects and invent objects.
 |---|---|---|---|
 | Notebooks and code | MIT | Yes | Yes |
 | Documentation | MIT | Yes | Yes |
-| Base dataset images | CC BY 4.0 | No | By reference, with attribution |
+| Base dataset images | CC BY 4.0 | No | Yes, with attribution — redistributed as the Release `v1.0` asset |
 | Images we added to the dataset | — | — | **None — see `image_provenance.md` §A** |
 | Held-out images (`data/new_images/`) | CC BY 4.0 | Yes — our own photographs | Yes, with attribution |
 | Trained weights | AGPL-3.0 (inherited) | Derived | Yes, with AGPL obligations |

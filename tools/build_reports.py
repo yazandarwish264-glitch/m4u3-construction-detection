@@ -307,7 +307,7 @@ def build_slides():
              M, y, SW - 2 * M - 30, size=12.5)
     y -= 20
     rows = [["Dataset", "As used in this project"],
-            ["Source", "seungyeon/construction-site-km7bh — CC BY 4.0, referenced not redistributed"],
+            ["Source", "seungyeon/construction-site-km7bh — CC BY 4.0, redistributed with attribution"],
             ["Images", "700, all annotated, five classes"],
             ["Split", "560 train / 140 validation (80 / 20), re-split from the source's 70/20/10"],
             ["Preprocessing", "Resize to 640 x 640. No augmentation"],
@@ -525,9 +525,9 @@ def build_report():
         "<br/><br/>"
         "The system is deliberately scoped as a <b>triage tool</b>. It directs a person to the "
         "photographs worth examining. It does not replace the examination, and it has no safety "
-        "function of any kind. The entire pipeline runs in the browser — Roboflow for data, Google "
-        "Colab for training — with no local installation, so a third party can reproduce every "
-        "result from the repository alone.", y)
+        "function of any kind. The entire pipeline runs in the browser — the data a "
+        "checksum-verified download, Colab for training — no install, no account. Re-run cold on "
+        "2026-09-23, both notebooks reproduced every reported metric exactly.", y)
     y -= 16
 
     y = h(c, "Method", y)
@@ -642,7 +642,7 @@ def build_report():
     y = h(c, "Governance and licensing", y)
     rows = [["Artefact", "Licence", "Owned", "Constraint"],
             ["Code and notebooks", "MIT", "Yes", "None"],
-            ["Base dataset", "CC BY 4.0", "No", "Attribution; referenced, not redistributed"],
+            ["Base dataset", "CC BY 4.0", "No", "Redistributed under CC BY 4.0 with attribution"],
             ["Held-out test images", "CC BY 4.0", "Yes", "Our own photographs; never trained on"],
             ["Trained weights", "AGPL-3.0", "Derived", "Commercial use needs AGPL compliance or a licence"]]
     t = Table(rows, colWidths=[CW * 0.20, CW * 0.13, CW * 0.10, CW * 0.57],

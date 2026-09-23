@@ -30,7 +30,8 @@ this project. It does not and cannot cover:
 1. THE DATASET.
    Base images are from the Roboflow Universe project
    `seungyeon/construction-site-km7bh`, licensed CC BY 4.0 by its authors.
-   Not owned by this project. Used with attribution. Not redistributed here.
+   Not owned by this project. Used and redistributed with attribution, which
+   CC BY 4.0 permits. See DATASET_ATTRIBUTION.md.
 
 2. THE TRAINED MODEL WEIGHTS.
    Derived from Ultralytics YOLOv8, which is licensed AGPL-3.0.
