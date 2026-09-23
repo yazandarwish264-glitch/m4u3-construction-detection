@@ -32,12 +32,14 @@ Before the graded run, we trained a **YOLOv11n** on the same images (version 2, 
 
 | Overall (validation, 140 images) | |
 |---|---|
-| mAP@50 | 0.748 |
+| mAP@50 | 0.744 |
 | mAP@50–95 | 0.349 |
 | Precision | 0.700 |
 | Recall | 0.760 |
 
-> **Corrected 2026-09-23.** This table previously read mAP@50 0.635, mAP@50–95 0.328, precision 0.547, recall 0.653. Those were wrong — 0.635 was the `pvcpipe` row (0.637) misread as the overall. The figures above are Roboflow's own evaluation of the run, verifiable on the [public project page](https://universe.roboflow.com/yazan-darwish/construction-site-km7bh-fapwu) now that the dataset is published. The per-class table below was correct throughout, and its five mAP@50 values average to 0.748, which is what exposed the error. **No finding in this document depended on the overall row** — every conclusion rests on per-class ranking, which is unchanged.
+> **Corrected 2026-09-23.** This table previously read mAP@50 0.635, mAP@50–95 0.328, precision 0.547, recall 0.653. Those were wrong — 0.635 was the `pvcpipe` row (0.637) misread as the overall. The precision and recall above are Roboflow's own, read from its evaluation of the run and verifiable on the [public project page](https://universe.roboflow.com/yazan-darwish/construction-site-km7bh-fapwu) now that the dataset is published. The per-class table below was correct throughout, and its five mAP@50 values average to 0.748, which is what exposed the error.
+>
+> **Corrected again, same day.** The mAP@50 cell read 0.748 for a few hours — our average of the per-class column, not Roboflow's figure, though the note claimed otherwise. Roboflow reports **74.36** for this run (`yolov11n`, version 2, precision 70, recall 76). The cell now carries Roboflow's number. The 0.5-point gap is how Roboflow weights its mean, and it changes no conclusion here. **No finding in this document depended on the overall row** — every conclusion rests on per-class ranking, which is unchanged.
 
 ### Per class
 
