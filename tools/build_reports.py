@@ -82,7 +82,8 @@ TAKEAWAYS = [
     "<b>The fix is data, not capacity.</b> Re-split by scene group so validation can "
     "detect this at all; add wide-field imagery and train multi-scale; add hard negatives "
     "for the two confusions actually observed. A larger model would raise the leaking "
-    "number and change none of the seven held-out results.",
+    "number and change none of the seven held-out results \u2014 a third run, "
+    "bigger architecture, different split, put steelbar last again.",
 ]
 
 LIMITATIONS = [
@@ -620,7 +621,7 @@ def build_report():
     y = body(c,
         "<b>A false negative is silent.</b> Steelbar is placed, the model misses it, no record is "
         "created, and nobody investigates because nobody knows there is anything to investigate. "
-        "The gap propagates into the programme unchallenged. <b>A false positive is loud.</b> A "
+        "The gap propagates unchallenged. <b>A false positive is loud.</b> A "
         "phantom record is contradicted by the next site walk. It costs a wasted verification trip "
         "and is self-correcting."
         "<br/><br/>"

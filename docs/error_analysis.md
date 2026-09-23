@@ -141,6 +141,97 @@ The YOLOv8s run on version 1 landed at **mAP@50 0.943**, far above the cross-che
 
 ---
 
+## 0.1 A third run — different architecture, different split, same weakest class
+
+Run inside the group on 2026-09-22, in a separate Roboflow workspace, on the same 700
+images. Almost nothing is held constant with the two runs above, which is what makes it
+worth reporting.
+
+| | Graded run | Hosted cross-check | **Third run** |
+|---|---|---|---|
+| Architecture | YOLOv8s | YOLOv11n | **YOLO26 Medium** |
+| Split | 560 / 140 / 0 | 546 / 140 / 14 | **525 / 105 / 70** (75/15/10) |
+| Measured on | validation | validation | **test** |
+| Confidence | 0.25 | 0.20 | **0.08** |
+| Preprocessing | 640×640 stretch, no augmentation | same | same |
+
+**Two figures exist for this run and only one is used here.** Roboflow's training
+notification reported mAP@50 74.2%, precision 74.6%, recall 67.7% — the validation
+figures. The model page reports the **test-set** evaluation, which is the one below.
+They are not interchangeable and mixing them would overstate the result.
+
+| Overall (test set, 70 images, conf 0.08) | |
+|---|---|
+| mAP@50 | **0.681** |
+| mAP@75 | 0.487 |
+| mAP@50–95 | 0.458 |
+| Precision | 0.676 |
+| Recall | 0.707 |
+| F1 | 0.682 |
+
+### Confusion matrix (test, conf 0.08) — rows are truth, columns are prediction
+
+| | brick | excavator | pvcpipe | scaffold | steelbar | **missed** |
+|---|---|---|---|---|---|---|
+| **brick** | 12 | 0 | 0 | 0 | 0 | 2 |
+| **excavator** | 0 | 22 | 0 | 0 | 0 | 0 |
+| **pvcpipe** | 0 | 0 | 18 | 0 | 0 | 5 |
+| **scaffold** | 0 | 0 | 0 | 10 | 0 | 9 |
+| **steelbar** | 0 | 0 | 0 | 0 | 10 | **17** |
+| **false positives** | 6 | 0 | 9 | 3 | **26** | — |
+
+### Per class, derived from the matrix
+
+| Class | Correct | Missed | False pos | Recall | Precision |
+|---|---|---|---|---|---|
+| `excavator` | 22 | 0 | 0 | **1.000** | **1.000** |
+| `brick` | 12 | 2 | 6 | 0.857 | 0.667 |
+| `pvcpipe` | 18 | 5 | 9 | 0.783 | 0.667 |
+| `scaffold` | 10 | 9 | 3 | 0.526 | 0.769 |
+| `steelbar` | 10 | 17 | **26** | **0.370** | **0.278** |
+
+> **These are derived, and the derivation is checked.** The five precisions average to
+> 0.676 and the five recalls to 0.707, which are exactly Roboflow's reported aggregates.
+> A misread of the matrix would not reproduce both to three decimals.
+
+### What it confirms
+
+**1. `steelbar` is last in all three runs.** Recall 0.612 on YOLOv8s, 0.517 on YOLOv11n,
+0.370 here — across three architectures, three splits, and both a validation and a test
+partition. Finding 3 above said instance count does not predict performance and shape
+does; `steelbar` still has the most training instances of any class and still finishes
+last. Three independent runs is the point at which that stops being a quirk of one
+training configuration.
+
+**2. One class of five produces most of the errors, in both directions.** `steelbar`
+accounts for **26 of the 44 false positives (59%)** and **17 of the 33 missed detections
+(52%)**. It is simultaneously the class the model invents most often and the class it
+misses most often — which is not what a merely under-trained class looks like.
+
+**3. Not one class confusion, again.** Every off-diagonal cell is zero. The model never
+mistakes `steelbar` for `scaffold`, or `brick` for anything. Finding 1 observed this on
+the hosted run with a single exception; here there are no exceptions at all. Every error
+is a miss or a box invented where nothing was labelled — the fingerprint of a detector
+matching a texture at a scale rather than recognising an object, which is the diagnosis
+§3 reaches from the resolution sweep by a completely different route.
+
+### What it does not settle
+
+- **It is not a leak-free measurement.** The split is a fresh random 75/15/10 over the
+  same sequentially-numbered frames, so the test partition inherits the same
+  near-duplicate problem documented in [README §4.1](../README.md). A higher score here
+  would not have meant generalisation, and this lower one does not measure it either.
+- **The absolute numbers are not comparable to ours.** Different architecture, different
+  partition, and a confidence threshold of 0.08 against our 0.25 — a threshold that low
+  buys recall with false positives, which is most of why 26 spurious `steelbar` boxes
+  appear. **Only the per-class ranking is being compared, and only the ranking is
+  claimed.**
+- **Three runs on one dataset is not three datasets.** Every run here trains on the same
+  700 images. What is replicated is the finding's independence from architecture and
+  split, not its independence from this particular data.
+
+---
+
 ## 1. False positives — the model saw something that is not there
 
 A false positive produces a **phantom record**: a report says blockwork started on level 3 when it has not, or says scaffold is still standing in a zone that was struck last week. The cost is a wasted verification trip and, repeated, a loss of trust in the tool.
@@ -342,12 +433,6 @@ Indoor low-light, direct sun, dust and wet surfaces each shift the appearance di
 This is the good outcome — it means the boundary cases are doing their job. Add more negatives of the specific confuser, and consider whether the class definition needs a new explicit exclusion.
 
 ---
-
-## 6. What we are not claiming
-
-- This analysis covers six cases out of `__` validation instances. It is a **directed sample**, chosen to be informative, not a random one. It identifies failure *modes*; it does not quantify their frequency.
-- Confidence values are model outputs, not calibrated probabilities. A detection at 0.9 is not "90% likely to be correct".
-- The improvements in §4 are hypotheses about what will help. None has been tested yet. Testing them is the next iteration, not this one.
 
 ## 6. What we are not claiming
 

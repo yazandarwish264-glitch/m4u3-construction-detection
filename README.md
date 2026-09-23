@@ -202,7 +202,7 @@ Three independent signals say the train/validation split leaks:
 
 **Cause.** Roboflow's split is random over images. When a dataset is built from video frames or photo bursts, random splitting puts near-identical images on both sides. Our re-split from 70/20/10 to 80/20 inherited this — we moved the test images into training and left validation untouched, which preserved the original split's leakage rather than introducing it.
 
-**What the numbers still support.** Per-class *ranking* is still informative, because every class is equally advantaged: `steelbar` is the weakest class at 0.781 despite having the most training instances, and it was also weakest in an independent YOLOv11n cross-check at 0.539. Two architectures agreeing on that ordering is a real finding.
+**What the numbers still support.** Per-class *ranking* is still informative, because every class is equally advantaged: `steelbar` is the weakest class at 0.781 despite having the most training instances, and it was weakest again in two further runs — mAP@50 0.539 in an independent YOLOv11n cross-check, and the lowest recall (0.370) and the lowest precision (0.278) of the five classes in a third run on YOLO26 Medium over a different 75/15/10 split. Three architectures across three splits agreeing on that ordering is a real finding, not an artefact of one training configuration — see [`docs/error_analysis.md`](docs/error_analysis.md) §0.1.
 
 **What they do not support.** Any claim about performance on unseen sites. The seven images in `data/new_images/` are the only honest generalisation evidence in this project. Section 4.2 reports what they showed.
 
