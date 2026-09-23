@@ -4,7 +4,8 @@
 *.pth
 results/weights/
 
-# Dataset — downloaded at runtime from Roboflow, never committed.
+# Dataset — fetched at runtime from the v1.0 Release asset, never committed.
+# See DATASET_ATTRIBUTION.md.
 dataset/
 *.zip
 
