@@ -33,7 +33,7 @@ Site photography is people photography. A construction site is a workplace, and 
 | 2.2 | No people are annotated, even where visible in frame. | ☑ | |
 | 2.3 | Images are stored at the resolution needed for detection, not the camera's maximum. | ☑ | Version 1 resizes to 640×640; training at 640. |
 | 2.4 | The dataset is not redistributed in this repository. It is referenced and downloaded at runtime. | ☑ | Reduces copies of the data in circulation. |
-| 2.5 | API keys are entered at runtime via `getpass` and never committed. | ☑ | Verified: no key appears in any notebook, config file or commit. |
+| 2.5 | No credential is required to reproduce the results, and none is committed. | ☑ | Both notebooks read the dataset from a checksum-verified public Release asset. No key appears in any notebook, config file or commit. |
 | 2.6 | Trained weights are released as a build artefact, not committed to git history. | ☑ | Weights cannot be removed from git history once committed. |
 | 2.7 | A retention period is defined for any images collected in a future pilot. | ☐ | Proposed: raw site images deleted 90 days after the progress record is created; detection records retained for the project's defects liability period. |
 
