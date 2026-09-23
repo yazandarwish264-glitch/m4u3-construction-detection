@@ -534,9 +534,8 @@ def build_report():
     y_after = body(c,
         "A public dataset, <i>seungyeon/construction-site-km7bh</i> (700 images, CC BY 4.0), was "
         "forked into our own Roboflow workspace and re-split from 70/20/10 to the required 80/20. "
-        "We added nothing: of 25 candidates, 20 were watermarked stock previews with no usable "
-        "licence and 5 were too few to matter. Seven first-party photographs are held back as an "
-        "unbiased test set. "
+        "The dataset is used as published, with no images added to it. Seven first-party "
+        "photographs are held back entirely as an unbiased test set. "
         "<br/><br/>"
         "Every label follows a written class-definition contract that specifies inclusions, "
         "exclusions, the one-box-per-visually-separable-group rule and a 20-pixel minimum size. "

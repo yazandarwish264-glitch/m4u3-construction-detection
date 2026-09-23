@@ -5,7 +5,7 @@ A YOLOv8 object-detection pipeline that identifies construction elements and pla
 
 Everything in this repository runs in Google Colab. No local installation is required.
 
-> **Building this for the first time?** Start with [`docs/TEAM_GUIDE.md`](docs/TEAM_GUIDE.md) — a step-by-step replication guide written for someone who has never trained a model or used GitHub, with a checklist, a plain-language glossary, and every trap we hit.
+> **Want to re-run this yourself?** Go to [§5, How to reproduce](#5-how-to-reproduce) — both notebooks open straight from this repository into Google Colab and need nothing installed locally.
 
 ---
 
@@ -385,7 +385,6 @@ Both notebooks read this URL from `WEIGHTS_URL` in their config cell; it is alre
 │   ├── 01_training_eval.ipynb    ← train, evaluate, export curves
 │   └── 02_baseline_inference.ipynb ← load weights, run inference, build evidence pack
 ├── docs/
-│   ├── TEAM_GUIDE.md             ← how to replicate this from scratch, start here
 │   ├── class_definitions.md      ← the five classes and their label rules
 │   ├── error_analysis.md         ← 3 FP + 3 FN + 3 prioritised data improvements
 │   ├── governance_checklist.md   ← privacy, minimisation, limitations, risk
@@ -414,7 +413,6 @@ Both notebooks read this URL from `WEIGHTS_URL` in their config cell; it is alre
 
 | Document | Contents |
 |---|---|
-| [**Team guide — how we built this**](docs/TEAM_GUIDE.md) | Step-by-step replication guide written for someone who has never trained a model or used GitHub. Checklist, plain-language glossary, every trap we hit |
 | [Class definitions](docs/class_definitions.md) | The five classes, inclusion and exclusion rules, occlusion convention |
 | [Error analysis](docs/error_analysis.md) | Three false positives and three false negatives with hypotheses, plus three prioritised dataset improvements |
 | [Governance checklist](docs/governance_checklist.md) | Privacy and consent, data minimisation, limitations statement, false-negative vs false-positive risk |
