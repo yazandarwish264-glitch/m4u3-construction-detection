@@ -308,7 +308,8 @@ VERIFICATION_RUN = False       # set True for the 5-epoch no-GPU fallback — se
 
 | Field | Value |
 |---|---|
-| Date and time of last successful full run | **2026-09-21T20:40:39Z** |
+| Date and time of the run that produced the released weights | **2026-09-21T20:40:39Z** |
+| Date and time of the most recent successful full run | **2026-09-23T13:19:37Z** (credential-free — see below) |
 | Run mode | **Full 30-epoch run** (not the verification fallback) |
 | Accelerator | **Tesla T4, 15360 MiB** |
 | Colab tier | Free |
@@ -337,7 +338,7 @@ Every output file it produced was compared byte-for-byte against the committed v
 
 That is a stronger result than the brief asks for. It means the pipeline is not merely re-runnable but **deterministic**: same weights from the Release, same seed, same library versions, same bytes out, on a machine that had never seen this project.
 
-**One caveat on both cold-start runs, stated rather than glossed.** At the time they were taken, the dataset still came from Roboflow behind a private API key, so both runs used the owner's own credential. The machine was fresh; the credential was not. That gap was found by a group member who could not run the notebook with his own key — which is precisely the test the owner cannot perform. It is now closed: the dataset is a public, checksum-verified Release asset and neither notebook asks for a credential at all.
+**One caveat on both cold-start runs, stated rather than glossed.** At the time they were taken, the dataset still came from Roboflow behind a private API key, so both runs used the owner's own credential. The machine was fresh; the credential was not. That gap was found by a group member who could not run the notebook with his own key — which is precisely the test the owner cannot perform. It is now closed, and verified rather than asserted: the dataset is a public, checksum-verified Release asset, neither notebook asks for a credential, and both were re-run end to end on 2026-09-23 with nothing typed into either one. That run is recorded below.
 
 ### Cold-start verification of notebook 01 — a full re-train
 
@@ -363,6 +364,61 @@ All three success criteria passed with the same values: S1 mAP@50 0.943, S2 `ste
 
 **The bound on that claim.** This is reproducibility on the *same GPU architecture*. Different accelerator hardware (A100, L4, CPU) changes floating-point reduction order and would likely move the last digit or two. The claim here is "same notebook, same pinned inputs, same class of machine, same numbers" — which is what the assignment asks a third party to be able to check.
 
+### Cold-start verification with no credentials at all — 2026-09-23
+
+The two runs above were taken before the dataset moved to a Release asset, so both
+used the owner's own Roboflow credential. This run closes that gap. It is also the
+run whose conditions match what a third party actually gets.
+
+Both notebooks were opened from the Colab badges at the top of this README into
+Colab runtimes that had never seen this project, and run with *Run all*.
+**Nothing was typed into either notebook: no API key, no Colab Secret, no Roboflow
+account.**
+
+**Notebook 01 — a full 30-epoch re-train, dataset from the Release asset.**
+
+| | Released run (2026-09-21, via Roboflow API) | Keyless re-train (2026-09-23, via Release asset) |
+|---|---|---|
+| Precision | 0.950 | **0.950** |
+| Recall | 0.884 | **0.884** |
+| mAP@50 | 0.943 | **0.943** |
+| mAP@50–95 | 0.809 | **0.809** |
+| `brick` (P/R/mAP50/mAP50-95) | 0.984 / 1.000 / 0.995 / 0.932 | **identical** |
+| `excavator` | 0.969 / 1.000 / 0.995 / 0.883 | **identical** |
+| `pvcpipe` | 0.986 / 0.930 / 0.964 / 0.835 | **identical** |
+| `scaffold` | 0.955 / 0.875 / 0.979 / 0.858 | **identical** |
+| `steelbar` | 0.855 / 0.612 / 0.781 / 0.535 | **identical** |
+
+Training took 6.0 minutes on a free-tier T4. The optional Roboflow cell (§5.2 of the
+notebook) printed `Keyless dataset already present - skipping Roboflow download.`
+and was never asked for a key.
+
+This run also settles something the earlier two could not. The Release zip is a
+**YOLO11-format** export, while the 2026-09-21 run used a **YOLOv8-format** download
+of the same Roboflow version. Every metric landing on the same three decimals is the
+evidence that the two exports carry the same images and the same labels — the frozen
+zip is the dataset that produced the reported numbers, not merely a copy of it.
+
+**Notebook 02 — evidence pack, with both the weights and the data from Releases.**
+
+Ran end to end on a fresh runtime. The released weights downloaded and hashed to
+`1c6bed77...d19e13`, matching §7 exactly. The validation split came from the same
+checksum-verified zip (`SHA-256 verified: 26b21198...4dcb4e`, 140 images) with no
+credential involved. The resolution-sensitivity diagnostic reproduced value for value:
+
+| Image | `imgsz=640` | `imgsz=1280` | `imgsz=2560` |
+|---|---|---|---|
+| `new_04` (blockwork wall) | `scaffold` 0.78 | `scaffold` 0.31 | `brick` 0.46 |
+| `new_05` (PVC conduit) | `scaffold` 0.28 | `steelbar` 0.27 | `steelbar` 0.57, 0.31 |
+| `new_03` (excavator) | nothing | `excavator` 0.52, 0.41 | nothing |
+
+**One honest limit on the determinism claim.** The re-trained `best.pt` is *not*
+byte-identical to the released one: it hashes to `d16220ad...d7c43` against the
+released `1c6bed77...d19e13`. Every reported metric matches to three decimals, but
+the weight tensors differ in their last bits — ordinary CUDA kernel non-determinism.
+The claim this repository makes is that the **reported numbers** reproduce on the
+same class of machine, not that the binary does.
+
 ### Reproducibility checklist
 
 - [x] **Dataset version:** `yazan-darwish/construction-site-km7bh-fapwu`, version `1`, YOLOv8 export. Forked from [`seungyeon/construction-site-km7bh`](https://universe.roboflow.com/seungyeon/construction-site-km7bh) and re-split.
@@ -375,9 +431,10 @@ All three success criteria passed with the same values: S1 mAP@50 0.943, S2 `ste
 - [x] **Random seed:** `0` (Ultralytics default, set explicitly in the config cell)
 - [x] **Ultralytics version:** `8.4.157` — pinned in `requirements.txt` and printed by the notebook at runtime
 - [x] **Full environment:** `pip freeze` output written to `results/pip_freeze.txt` by the notebook
-- [ ] **Weights:** published as a GitHub Release asset — see §7
+- [x] **Weights:** published as a GitHub Release asset — see §7
 - [x] **Hardware:** recorded in the table above
-- [ ] **Notebook runs end to end from a clean runtime:** verified on the date above
+- [x] **Notebooks run end to end from a clean runtime, with no credentials:** both verified 2026-09-23 — see above
+- [x] **Dataset:** frozen zip published as a Release asset, SHA-256 `26b21198babe59ebb03c5fc43fee4d956690dfebb1802bb6325f219b234dcb4e`, checked on download by both notebooks — see §3
 
 **Code-path verification.** Before the first training run, every Ultralytics API call in `01_training_eval.ipynb` and `02_baseline_inference.ipynb` was executed against **ultralytics 8.4.157 / torch 2.14.0** on a synthetic five-class dataset, to confirm no cell raises. Two issues were found and fixed: `model.val()` wrote its plots outside the results tree until `project`/`name` were passed, and the precision-recall plot is named `BoxPR_curve.png` in the 8.4 series, not `PR_curve.png`. This is a check that the pipeline *executes*; it is not a substitute for the full cold-start run recorded above.
 
